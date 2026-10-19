@@ -121,6 +121,16 @@ input.q{font:inherit;font-size:14px;color:var(--ink);background:var(--panel);bor
 .fic .k{color:var(--muted);background:var(--soft)}
 @media (max-width:520px){.fic{grid-template-columns:minmax(0,1fr)}.fic .k{border-bottom:0;padding-bottom:0}}
 h3{font-family:var(--display);font-size:16px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:4px 0 0}
+.proc{border:2px solid var(--bad);border-left-width:8px;background:var(--panel);border-radius:4px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.proc .ttl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.proc h2{margin:0;color:var(--bad)}
+.proc .why{font-size:14px}
+.proc ol{margin:0;padding-left:20px;display:grid;gap:4px;font-size:14px}
+.proc .row{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:14px}
+.proc .btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{display:inline-block;padding:8px 14px;border-radius:4px;border:1px solid var(--steel);color:var(--steel);text-decoration:none;font-weight:600;font-size:14px}
+.btn.pri{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .doc a{color:var(--steel)} .doc a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .doc{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)} .doc:last-child{border-bottom:0}
 footer{margin-top:22px;font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
@@ -155,7 +165,8 @@ footer{margin-top:22px;font-size:12.5px;color:var(--muted);border-top:1px solid 
   <main id="v-documentos" hidden>
     <section class="panel"><div class="head"><h2>Documentos de consulta</h2><span class="note">Se abren en el navegador, en PDF</span></div>
       <div class="doc"><span class="pill steel">PDF</span><div class="grow"><a href="docs/ficha-tecnica-maqtec.pdf" target="_blank" rel="noopener"><b>Ficha técnica · Cosechadora salinera MAQTEC</b></a><div class="note">Motor, sistema hidráulico con diagrama, lubricantes y equivalentes, plan de mantenimiento, pantalla, modificaciones por máquina y manchones.</div></div></div>
-      <div class="doc"><span class="pill steel">PDF</span><div class="grow"><a href="docs/procedimiento-agua-aceite-hidraulico.pdf" target="_blank" rel="noopener"><b>Procedimiento preventivo · Agua en el aceite hidráulico MAQTEC</b></a><div class="note">Vías de entrada de agua, controles diarios del maquinista, lavado, parada fuera de temporada, muestras de aceite y qué hacer si se detecta agua. Borrador para revisar con MAQTEC.</div></div></div>
+      <div class="doc"><span class="pill steel">PDF</span><div class="grow"><a href="docs/procedimiento-agua-aceite-hidraulico.pdf" target="_blank" rel="noopener"><b>Procedimiento preventivo · Agua en el aceite hidráulico MAQTEC</b></a><div class="note">Vías de entrada de agua, controles diarios del maquinista, lavado, parada fuera de temporada, muestras de aceite y qué hacer si se detecta agua. Código PP-MAQ-01, con aprobación del Jefe responsable y toma de conocimiento de los operadores.</div></div></div>
+      <div class="doc"><span class="pill bad">Imprimir</span><div class="grow"><a href="docs/registro-controles-maqtec.pdf" target="_blank" rel="noopener"><b>Planilla de registro de controles · MAQTEC</b></a><div class="note">PP-MAQ-01-R1: control diario antes de arrancar, firmado por el maquinista y visado por el Jefe. PP-MAQ-01-R2: arranques de la parada y muestras de aceite.</div></div></div>
       <div class="doc"><span class="pill steel">Guía</span><div class="grow"><a href="docs/guia-chofer-xcmg.html" target="_blank" rel="noopener"><b>Guía del chofer · Camión XCMG</b></a><div class="note">Control de salida, arranque, volteo, marcha y apagado, servicios, alertas y testigos del tablero.</div></div></div>
       <div class="note">Los documentos se actualizan junto con el tablero.</div>
     </section>
@@ -268,8 +279,19 @@ let Q='';
 function renderEquipos(){const q=Q.trim().toLowerCase();const eqs=activos().filter(e=>!q||(e.nombre+' '+(e.alias||[]).join(' ')).toLowerCase().includes(q));
   $('v-equipos').innerHTML=`<section class="panel"><div class="head"><h2>Equipos</h2><input class="q" id="q" placeholder="Buscar equipo" aria-label="Buscar equipo" value="${esc(Q)}"></div>
   <div class="note">Tocá un equipo para ver su ficha técnica, el estado de los services y los últimos mantenimientos. La franja de color indica el estado de mantenimiento.</div>
-  ${GRUPOS.map(([g,gn])=>{const l=eqs.filter(e=>e.grupo===g);return l.length?`<div class="grp">${gn}</div><div class="eqgrid">${l.map(e=>{const st=eqStatus(e),la=lecAct(e.id),lw=lastWork(e.id);return `<a class="eqc" href="#equipo-${esc(e.id)}"><i class="bg-${st}"></i><div class="in"><span class="nm">${esc(e.nombre)}</span><span class="meta">${stTxt[st]}${la?' · '+fmt(la.lec)+' '+uName(e):''}${DATA.fichas[e.id]?' · con ficha':''}</span>${lw?`<span class="meta">Último trabajo: ${fdate(lw.f)}</span>`:''}</div></a>`}).join('')}</div>`:''}).join('')||'<div class="empty">Ningún equipo coincide.</div>'}</section>`;
+  ${GRUPOS.map(([g,gn])=>{const l=eqs.filter(e=>e.grupo===g);return l.length?`<div class="grp">${gn}</div><div class="eqgrid">${l.map(e=>{const st=eqStatus(e),la=lecAct(e.id),lw=lastWork(e.id);return `<a class="eqc" href="#equipo-${esc(e.id)}"><i class="bg-${st}"></i><div class="in"><span class="nm">${esc(e.nombre)}</span><span class="meta">${stTxt[st]}${la?' · '+fmt(la.lec)+' '+uName(e):''}${DATA.fichas[e.id]?' · con ficha':''}</span>${lw?`<span class="meta">Último trabajo: ${fdate(lw.f)}</span>`:''}${PROCS[e.planId]?'<span class="meta" style="color:var(--bad);font-weight:600">⚠ Procedimiento obligatorio</span>':''}</div></a>`}).join('')}</div>`:''}).join('')||'<div class="empty">Ningún equipo coincide.</div>'}</section>`;
   const qi=$('q');qi.oninput=()=>{Q=qi.value;const pos=qi.selectionStart;renderEquipos();const n=$('q');n.focus();try{n.setSelectionRange(pos,pos)}catch(_){}}}
+const PROCS={'maqtec-salinera':{cod:'PP-MAQ-01 · Rev. 0',tit:'Procedimiento obligatorio · Agua en el aceite hidráulico',
+  why:'La C N°7 rompió la bomba hidráulica en 2026 por agua en el aceite: 4.773 ppm contra un límite de 100 ppm. Este control es obligatorio en las tres MAQTEC.',
+  pasos:['<b>Aceite en el visor</b> de los dos tanques: tiene que verse claro. <b>Lechoso o turbio: no arrancar y avisar.</b>','<b>Nivel</b> de los dos tanques, <b>tapas y respiradero</b> cerrados y sin sal, sin <b>pérdidas</b> debajo de la máquina.','<b>Purgar</b> el fondo del tanque si tiene drenaje y anotar si salió agua.','<b>Anotar y firmar</b> en la planilla PP-MAQ-01-R1. El Jefe responsable la visa cada semana.'],
+  pdf:'docs/procedimiento-agua-aceite-hidraulico.pdf',reg:'docs/registro-controles-maqtec.pdf',tarea:'m-pre'}};
+function procHtml(e,it){const P=PROCS[e.planId];if(!P)return '';const m=it.find(i=>i.t.id===P.tarea);
+  const ult=m&&m.ls?fdate(m.ls.fecha):'Sin registro';const st=m?m.st:'na';
+  return `<section class="proc" aria-label="Procedimiento obligatorio"><div class="ttl"><h2>⚠ ${esc(P.tit)}</h2><span class="pill bad">${esc(P.cod)}</span></div>
+  <div class="why">${esc(P.why)}</div>
+  <div><b>Todos los días en temporada, antes de arrancar</b> (máquina fría y en llano):</div><ol>${P.pasos.map(x=>`<li>${x}</li>`).join('')}</ol>
+  <div class="row"><span><b>Revisión de pre-temporada con muestra de aceite</b> (diciembre) · último registro: <b class="num">${ult}</b></span>${m?`<span><span class="pill ${st}">${{bad:'Vencido',warn:'Próximo',ok:'Al día',na:'Sin dato'}[st]}</span> <span class="note num">${esc(remTxt(m))}</span></span>`:''}</div>
+  <div class="btns"><a class="btn pri" href="${P.pdf}" target="_blank" rel="noopener">Ver procedimiento completo</a><a class="btn" href="${P.reg}" target="_blank" rel="noopener">Planilla de registro para imprimir y firmar</a></div></section>`}
 function renderEquipo(id){const e=eqById(id);if(!e){location.hash='#equipos';return}
   const la=lecAct(id),uso=usoDia(id),u=uName(e),it=eqItems(e),pl=planOf(e),f=DATA.fichas[id];
   const cs=CARGAS.filter(c=>c.equipo===id);const gas=cs.reduce((a,c)=>a+Number(c.gasoil||0),0);
@@ -281,6 +303,7 @@ function renderEquipo(id){const e=eqById(id);if(!e){location.hash='#equipos';ret
   $('v-equipos').innerHTML=`<div><button class="back" type="button" onclick="location.hash='#equipos'">← Todos los equipos</button></div>
   <section class="panel"><div class="head"><h2>${esc(e.nombre)}</h2><span class="pill ${eqStatus(e)}">${stTxt[eqStatus(e)]}</span></div>
    <div class="kv" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr))"><div><b>${la?fmt(la.lec)+' '+u:'—'}</b><span>Lectura actual${la?' · '+fdate(la.fecha):''}</span></div><div><b>${uso?fmt(uso,1)+' '+u+'/día':'—'}</b><span>Uso promedio</span></div><div><b>${fmt(gas)} L</b><span>Gasoil en el año</span></div><div><b>${rend?fmt(rend,1)+(e.unidad==='km'?' km/L':' L/h'):'—'}</b><span>Rendimiento</span></div><div><b>${e.combustible==='euro'?'Euro Diesel':'Tanque'}</b><span>Combustible</span></div></div></section>
+  ${procHtml(e,it)}
   ${f?`<section class="panel"><div class="head"><h2>Ficha técnica</h2><span class="note">${esc(f.titulo)} · ${esc(f.fabricante)}</span></div>${f.nota?`<div class="note" style="color:var(--ink)">${esc(f.nota)}</div>`:''}${f.secciones.map(sx=>`<h3>${esc(sx.t)}</h3><div class="fic">${sx.filas.map(r=>`<div class="k">${esc(r[0])}</div><div>${esc(r[1])}</div>`).join('')}</div>`).join('')}</section>`:`<section class="panel"><div class="head"><h2>Ficha técnica</h2></div><div class="note">Todavía no hay ficha técnica cargada para este equipo.</div></section>`}
   <section class="panel"><div class="head"><h2>Plan de service</h2><span class="note">${pl?esc(pl.nombre):'Sin plan asignado'}</span></div>${it.length?`<div class="tbl"><table><tr><th></th><th>Tarea</th><th>Último registro</th><th>Estado</th></tr>${it.map(i=>`<tr><td class="sev s-${i.st}"><i></i></td><td>${esc(i.t.nombre)}</td><td class="num" style="font-size:13px">${i.ls?fdate(i.ls.fecha)+(hasLec(i.ls)?' · '+fmt(i.ls.lectura)+' '+u:''):'Sin registro'}</td><td><span class="pill ${i.st}">${{bad:'Vencido',warn:'Próximo',ok:'Al día',na:'Sin dato'}[i.st]}</span> <span class="note num">${esc(remTxt(i))}</span></td></tr>`).join('')}</table></div>`:'<div class="note">Sin tareas para mostrar.</div>'}</section>
   ${ot.length?`<section class="panel"><div class="head"><h2>Órdenes de trabajo</h2></div>${ot.map(o=>`<div class="li"><span class="otnum">OT-${String(o.numero).padStart(4,'0')}</span><div class="grow"><div class="t">${esc(TIPOS[o.tipo]||'')} · ${o.estado==='cerrada'?'Cerrada':'En curso'} · desde ${fdate(o.fecha)}</div><div class="note">${esc(o.descripcion||'')}</div></div></div>`).join('')}</section>`:''}
