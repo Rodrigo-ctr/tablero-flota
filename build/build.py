@@ -1,7 +1,7 @@
 """Genera index.html del Tablero de Flota.
 Uso: python3 build/build.py <carpeta_datos> <fecha AAAA-MM-DD>
 <carpeta_datos> contiene las colecciones exportadas de Gestión de Flota
-(cargas/, config/, planes/, services/, ordenes/, ingresos/, historial/),
+(cargas/, config/, planes/, services/, ordenes/, ingresos/, historial/, controles/),
 un JSON por documento, tal como las guarda ArtifactData con out_dir."""
 import json, glob, os, sys
 D, FECHA = sys.argv[1], sys.argv[2]
@@ -24,6 +24,8 @@ snap = {
     'services': [dict(d, id=i) for i, d in docs('services')],
     'ordenes': [dict(d, id=i) for i, d in docs('ordenes')],
     'historial': {i: d.get('items', []) for i, d in docs('historial')},
+    # controles de agua en el aceite: sin nombres de personas en la página pública
+    'controles': [dict({k: v for k, v in d.items() if k not in ('operador', 'jefe', 'creado')}, visado=bool(d.get('jefe'))) for _, d in docs('controles')],
     'fichas': json.load(open(os.path.join(HERE, 'fichas.json'))),
 }
 data = json.dumps(snap, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')

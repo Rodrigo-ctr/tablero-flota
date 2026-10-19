@@ -286,9 +286,15 @@ const PROCS={'maqtec-salinera':{cod:'PP-MAQ-01 · Rev. 0',tit:'Procedimiento obl
   pdf:'docs/procedimiento-agua-aceite-hidraulico.pdf',reg:'docs/registro-controles-maqtec.pdf',tarea:'m-pre'}};
 function procHtml(e,it){const P=PROCS[e.planId];if(!P)return '';const m=it.find(i=>i.t.id===P.tarea);
   const ult=m&&m.ls?fdate(m.ls.fecha):'Sin registro';const st=m?m.st:'na';
+  const cs=(DATA.controles||[]).filter(c=>c.equipo===e.id).sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));const lc=cs[0];
+  const agua=c=>['turbio','lechoso'].includes(c.aceiteTrab)||['turbio','lechoso'].includes(c.aceiteTrans)||c.purga==='agua'||c.muestra==='fuera';
+  const mal=c=>agua(c)||c.respiradero==='revisar'||c.perdidas==='si';
+  const CT={diario:'control diario',parada:'arranque de parada',muestra:'muestra de aceite'};
+  const ctrlLine=lc?`<span><b>Último control registrado:</b> <b class="num">${fdate(lc.fecha)}</b> · ${esc(CT[lc.tipo]||'control')} ${agua(lc)?'<span class="pill bad">Posible agua en el aceite</span>':mal(lc)?'<span class="pill warn">Con novedades</span>':'<span class="pill ok">Normal</span>'}${lc.visado?'':' <span class="pill na">sin visar</span>'}</span>`:'<span><b>Último control registrado:</b> todavía no hay controles cargados.</span>';
   return `<section class="proc" aria-label="Procedimiento obligatorio"><div class="ttl"><h2>⚠ ${esc(P.tit)}</h2><span class="pill bad">${esc(P.cod)}</span></div>
   <div class="why">${esc(P.why)}</div>
   <div><b>Todos los días en temporada, antes de arrancar</b> (máquina fría y en llano):</div><ol>${P.pasos.map(x=>`<li>${x}</li>`).join('')}</ol>
+  <div class="row">${ctrlLine}</div>
   <div class="row"><span><b>Revisión de pre-temporada con muestra de aceite</b> (diciembre) · último registro: <b class="num">${ult}</b></span>${m?`<span><span class="pill ${st}">${{bad:'Vencido',warn:'Próximo',ok:'Al día',na:'Sin dato'}[st]}</span> <span class="note num">${esc(remTxt(m))}</span></span>`:''}</div>
   <div class="btns"><a class="btn pri" href="${P.pdf}" target="_blank" rel="noopener">Ver procedimiento completo</a><a class="btn" href="${P.reg}" target="_blank" rel="noopener">Planilla de registro para imprimir y firmar</a></div></section>`}
 function renderEquipo(id){const e=eqById(id);if(!e){location.hash='#equipos';return}

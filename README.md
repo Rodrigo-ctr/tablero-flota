@@ -6,7 +6,7 @@ Página de solo lectura. Los datos se cargan en Gestión de Flota (Claude) y el 
 
 ## Cómo se actualiza
 
-1. Se exportan las colecciones de Gestión de Flota (cargas, config, planes, services, ordenes, ingresos, historial) a una carpeta, un JSON por documento.
+1. Se exportan las colecciones de Gestión de Flota (cargas, config, planes, services, ordenes, ingresos, historial, controles) a una carpeta, un JSON por documento.
 2. `python3 build/build.py <carpeta> <AAAA-MM-DD>` genera `index.html` con los datos embebidos.
 3. Se publica con un commit a `main` (GitHub Pages sirve la raíz de `main`).
 
