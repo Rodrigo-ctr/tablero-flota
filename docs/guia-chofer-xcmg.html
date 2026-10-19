@@ -1,0 +1,524 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Guía del chofer XCMG</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Concepto: tarjeta de cabina. Fondo gris acero, amarillo de seguridad solo para lo activo y los pasos; rojo/ámbar/verde solo para estado. */
+:root{
+  --bg:#EDEFF1; --surface:#FFFFFF; --ink:#15191D; --muted:#586169; --line:#D3D8DD;
+  --accent:#E0A800; --on-accent:#15191D; --ok:#1E7B45; --warn:#A85A00; --bad:#BE2A20;
+  --bad-bg:#FBE9E7; --warn-bg:#FFF3DF; --ok-bg:#E6F4EC;
+  --f-display:"Barlow Condensed","Arial Narrow",sans-serif;
+  --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111417; --surface:#1B2024; --ink:#EEF1F3; --muted:#9BA5AE; --line:#2C343B;
+  --accent:#F2BC1B; --on-accent:#15191D; --ok:#4CC27F; --warn:#F0A23A; --bad:#FF6F63;
+  --bad-bg:#3A1D1B; --warn-bg:#3A2C14; --ok-bg:#173125; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111417; --surface:#1B2024; --ink:#EEF1F3; --muted:#9BA5AE; --line:#2C343B;
+  --accent:#F2BC1B; --on-accent:#15191D; --ok:#4CC27F; --warn:#F0A23A; --bad:#FF6F63;
+  --bad-bg:#3A1D1B; --warn-bg:#3A2C14; --ok-bg:#173125; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:500 17px/1.45 var(--f-body);margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
+.wrap{max-width:640px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;letter-spacing:.01em;margin:0;text-wrap:balance}
+header.top{padding-top:14px}
+.eyebrow{font:500 12px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-size:34px;line-height:1.05;margin-top:6px}
+.specs{display:flex;flex-wrap:wrap;gap:6px 14px;margin:10px 0 0;padding:0;list-style:none;color:var(--muted);font-size:14px}
+.specs b{color:var(--ink);font-weight:600}
+
+.notice{margin-top:14px;padding:12px 14px;border-radius:8px;background:var(--warn-bg);border:1px solid var(--warn);font-size:15px}
+.notice strong{color:var(--warn)}
+
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);margin:14px calc(-1*max(16px,env(safe-area-inset-left,0px))) 0;
+  padding:8px max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line);
+  display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.tab{flex:0 0 auto;min-height:44px;padding:0 16px;border:1.5px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);
+  font:700 18px/1 var(--f-display);letter-spacing:.02em;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.tab:focus-visible,.chk:focus-within,button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+
+section.panel{padding-top:18px;display:flex;flex-direction:column;gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+.card h2{font-size:26px;margin-bottom:4px}
+.card h3{font-size:20px;margin:14px 0 6px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-family:var(--f-mono);font-weight:500;font-size:13px}
+.card h3:first-child{margin-top:0}
+.sub{color:var(--muted);font-size:15px;margin:0 0 10px}
+
+ol.steps{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:10px;counter-reset:s}
+ol.steps li{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;counter-increment:s}
+ol.steps li::before{content:counter(s);width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--on-accent);
+  font:700 20px/34px var(--f-display);text-align:center}
+ol.steps li div{min-width:0;padding-top:4px}
+
+.checklist{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.chk{display:grid;grid-template-columns:30px 1fr;gap:12px;align-items:start;padding:12px;border:1.5px solid var(--line);border-radius:8px;background:var(--surface);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.chk input{width:26px;height:26px;margin:1px 0 0;accent-color:var(--ok)}
+.chk b{display:block;font-weight:600}
+.chk span{display:block;color:var(--muted);font-size:15px}
+.chk:has(input:checked){background:var(--ok-bg);border-color:var(--ok)}
+.progress{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:6px}
+.count{font:500 14px/1 var(--f-mono);color:var(--muted)}
+.reset{min-height:44px;padding:0 14px;border:1.5px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:600 15px var(--f-body);cursor:pointer}
+
+ul.never{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+ul.never li{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;padding:10px 12px;border-radius:8px;background:var(--bad-bg);border:1px solid var(--bad)}
+ul.never li::before{content:"";width:18px;height:18px;margin-top:3px;border-radius:50%;
+  background:linear-gradient(var(--bad-bg),var(--bad-bg)) center/10px 3px no-repeat,var(--bad)}
+
+table.vals{width:100%;border-collapse:collapse;margin-top:8px;font-size:16px}
+table.vals td{padding:9px 0;border-top:1px solid var(--line);vertical-align:top}
+table.vals td:last-child{text-align:right;font:500 16px var(--f-mono);white-space:nowrap;padding-left:12px}
+
+.alert{border-radius:10px;padding:14px 16px;border:1.5px solid var(--line);background:var(--surface);border-left-width:8px}
+.alert.stop{border-color:var(--bad);border-left-color:var(--bad)}
+.alert.watch{border-color:var(--warn);border-left-color:var(--warn)}
+.alert h2{font-size:24px}
+.alert .lvl{font:500 12px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;display:block}
+.alert.stop .lvl{color:var(--bad)} .alert.watch .lvl{color:var(--warn)}
+.alert p{margin:6px 0 0}
+.note{font-size:14px;color:var(--muted);margin:10px 0 0}
+.pill{display:inline-block;font:500 12px/1 var(--f-mono);padding:4px 7px;border-radius:5px;background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn);vertical-align:2px;margin-left:4px;letter-spacing:.04em}
+.kmbox{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end;margin-top:10px}
+label.fld{display:flex;flex-direction:column;gap:4px;font:500 12px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);min-width:0}
+input.in,textarea.in{width:100%;min-height:52px;padding:8px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:600 26px/1.2 var(--f-mono);font-variant-numeric:tabular-nums}
+textarea.in{font:500 17px/1.4 var(--f-body);min-height:88px;resize:vertical}
+input.in:focus-visible,textarea.in:focus-visible{outline:3px solid var(--ink);outline-offset:1px}
+.btn{min-height:52px;padding:0 18px;border:0;border-radius:8px;background:var(--accent);color:var(--on-accent);font:700 20px/1 var(--f-display);letter-spacing:.03em;cursor:pointer}
+.btn.alt{background:var(--surface);color:var(--ink);border:1.5px solid var(--line)}
+a.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.dataline{font:500 13px/1.4 var(--f-mono);color:var(--muted);margin:0}
+.dataline b{color:var(--ink);font-weight:500}
+.svc{display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.svc:first-child{border-top:0}
+.svc .nm{font-weight:600;min-width:0}
+.svc .dt{grid-column:1/-1;color:var(--muted);font-size:14px;margin:0}
+.svc .rem{font:600 20px/1 var(--f-mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.svc .rem small{display:block;font:500 11px/1.2 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;margin-top:4px}
+.svc.ok .rem{color:var(--ok)} .svc.warn .rem{color:var(--warn)} .svc.bad .rem{color:var(--bad)}
+.bar{grid-column:1/-1;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ok);border-radius:3px}
+.svc.warn .bar i{background:var(--warn)} .svc.bad .bar i{background:var(--bad)}
+details.more summary{min-height:44px;display:flex;align-items:center;font:700 18px var(--f-display);cursor:pointer;color:var(--ink)}
+.lights{display:flex;flex-direction:column}
+.lt{display:grid;grid-template-columns:14px 1fr;gap:12px;padding:10px 0;border-top:1px solid var(--line);align-items:start}
+.lt:first-child{border-top:0}
+.lt i{width:14px;height:14px;border-radius:50%;margin-top:5px;background:var(--muted)}
+.lt.r i{background:var(--bad)} .lt.y i{background:var(--accent)} .lt.g i{background:var(--ok)} .lt.b i{background:#2F6FD6}
+.lt b{font-weight:600} .lt span{display:block;color:var(--muted);font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{min-height:44px;padding:0 14px;border:1.5px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font:600 16px var(--f-body);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+pre.msg{white-space:pre-wrap;word-break:break-word;margin:10px 0 0;padding:12px;border-radius:8px;background:var(--bg);border:1px solid var(--line);font:500 15px/1.5 var(--f-mono)}
+.row{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.row>*{flex:1 1 140px}
+footer{margin-top:26px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:12px}
+@media (prefers-reduced-motion:no-preference){.tab{transition:background .15s,border-color .15s}}
+</style>
+
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">Guía de consulta rápida</div>
+  <h1>XCMG NXG3310D5WE volquete</h1>
+  <ul class="specs">
+    <li><b>Motor</b> Weichai WP13.550</li>
+    <li><b>Caja</b> Fast 12 vel. manual</li>
+    <li><b>PBT</b> 59.700 kg</li>
+  </ul>
+  <div class="notice"><strong>Camión en rodaje.</strong> Primeras 50 h de motor: carga media, sin ralentí largo ni bajas vueltas prolongadas.</div>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Secciones">
+  <button class="tab" role="tab" id="t-salida" aria-controls="p-salida" aria-selected="true">Antes de salir</button>
+  <button class="tab" role="tab" id="t-arranque" aria-controls="p-arranque" aria-selected="false">Arranque</button>
+  <button class="tab" role="tab" id="t-volteo" aria-controls="p-volteo" aria-selected="false">Volteo</button>
+  <button class="tab" role="tab" id="t-marcha" aria-controls="p-marcha" aria-selected="false">Marcha y apagado</button>
+  <button class="tab" role="tab" id="t-servicios" aria-controls="p-servicios" aria-selected="false">Servicios</button>
+  <button class="tab" role="tab" id="t-alertas" aria-controls="p-alertas" aria-selected="false">Alertas</button>
+  <button class="tab" role="tab" id="t-testigos" aria-controls="p-testigos" aria-selected="false">Testigos</button>
+  <button class="tab" role="tab" id="t-parte" aria-controls="p-parte" aria-selected="false">Parte del día</button>
+</nav>
+
+<!-- ANTES DE SALIR -->
+<section class="panel" id="p-salida" role="tabpanel" aria-labelledby="t-salida">
+  <div class="card">
+    <h2>Control de salida</h2>
+    <p class="sub">Tocá cada ítem cuando lo revisaste. Se borra solo al día siguiente.</p>
+    <div class="checklist" id="checklist">
+      <label class="chk"><input type="checkbox" data-id="aceite"><div><b>Aceite del motor</b><span>Varilla entre la marca inferior y la superior. Con el motor parado y en piso plano. Si recién se apagó, esperar 15 a 30 min.</span></div></label>
+      <label class="chk"><input type="checkbox" data-id="refri"><div><b>Refrigerante</b><span>Nivel entre MIN y MAX en el depósito, con el motor frío. No abrir la tapa en caliente.</span></div></label>
+      <label class="chk"><input type="checkbox" data-id="urea"><div><b>Urea (AdBlue)</b><span>Entre 30 % y 80 % en el tablero. No llenar de más.</span></div></label>
+      <label class="chk"><input type="checkbox" data-id="hidr"><div><b>Aceite hidráulico del volteo</b><span>Nivel correcto y sin fugas en mangueras ni cilindro.</span></div></label>
+      <label class="chk"><input type="checkbox" data-id="fugas"><div><b>Fugas debajo del camión</b><span>Aceite, refrigerante, combustible o aire.</span></div></label>
+      <label class="chk"><input type="checkbox" data-id="ruedas"><div><b>Neumáticos y ruedas</b><span>Estado, presión y tuercas completas.</span></div></label>
+      <label class="chk"><input type="checkbox" data-id="pausa"><div><b>Palanca de volteo en “pausa” y toma de fuerza apagada</b><span>Si no, el cajón puede levantarse solo en la ruta.</span></div></label>
+      <label class="chk"><input type="checkbox" data-id="traba"><div><b>Traba del portón trasero y cajón apoyado</b><span>Cajón bien bajo y portón cerrado.</span></div></label>
+    </div>
+    <div class="progress"><span class="count" id="count">0 de 8</span><button class="reset" id="reset" type="button">Nueva salida</button></div>
+  </div>
+  <div class="card">
+    <h2>Cada semana o 50 h</h2>
+    <p class="sub">Lo hace mantenimiento. Avisar si el chofer nota algo.</p>
+    <ul style="margin:0;padding-left:20px">
+      <li>Fugas en mangueras de aire e hidráulicas.</li>
+      <li>Apriete de tuercas y bulones.</li>
+      <li>Engrase de todos los puntos del volteo (grasa de litio N.º 2; no engrasar el vástago del cilindro).</li>
+      <li>Tacos de madera y de goma del cajón.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ARRANQUE -->
+<section class="panel" id="p-arranque" role="tabpanel" aria-labelledby="t-arranque" hidden>
+  <div class="card">
+    <h2>Arrancar el motor</h2>
+    <ol class="steps">
+      <li><div><b>Caja en neutro (N).</b> El motor siempre arranca en neutro.</div></li>
+      <li><div><b>Llave en ON.</b> Mirá que los testigos del tablero se enciendan y se apaguen.</div></li>
+      <li><div><b>Precalentamiento.</b> Con más de 0 °C el testigo se apaga a los 2 s. Con menos de 0 °C esperá a que se apague antes de arrancar. Solo una vez por arranque.</div></li>
+      <li><div><b>Llave a START</b> hasta que pase de 600 rpm y soltá. Máximo 12 s por intento.</div></li>
+      <li><div><b>Si no arranca,</b> esperá 30 s antes de reintentar. Tres intentos fallidos: no insistas y avisá.</div></li>
+      <li><div><b>Ralentí 3 min</b> (más en invierno). Controlá que haya presión de aceite. No aceleres fuerte en frío.</div></li>
+    </ol>
+    <p class="note">No usar líquido de arranque junto con el precalentador.</p>
+  </div>
+</section>
+
+<!-- VOLTEO -->
+<section class="panel" id="p-volteo" role="tabpanel" aria-labelledby="t-volteo" hidden>
+  <div class="card">
+    <h2>Antes de levantar</h2>
+    <ul style="margin:8px 0 0;padding-left:20px">
+      <li>Piso firme y plano. Pendiente menor a 5°.</li>
+      <li>Camión derecho, sin torcer.</li>
+      <li>Nadie en la zona de trabajo ni debajo del cajón.</li>
+      <li>Carga bien repartida y portón trasero libre para abrir.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h2>Activar el volteo <span class="pill">CONFIRMAR</span></h2>
+    <p class="sub">Según el manual de la carrocería. El camión tiene toma de fuerza de estacionamiento y de marcha: si dudás de la secuencia, no levantes y consultá.</p>
+    <ol class="steps">
+      <li><div><b>Pisar el embrague</b> a fondo.</div></li>
+      <li><div><b>Toma de fuerza (PTO) en encendido,</b> con la caja en neutro.</div></li>
+      <li><div><b>Marcha baja</b> (1.ª a 4.ª) y soltar el embrague despacio.</div></li>
+      <li><div>Se enciende el <b>testigo de volteo</b> en el tablero.</div></li>
+    </ol>
+  </div>
+  <div class="card">
+    <h2>Levantar y bajar</h2>
+    <ol class="steps">
+      <li><div><b>Palanca a “levantar”.</b> El cajón sube a velocidad pareja. Motor a régimen medio.</div></li>
+      <li><div><b>Máximo 2.400 rpm.</b> No aceleres a fondo, y menos cerca del tope.</div></li>
+      <li><div><b>“Pausa”</b> para detenerlo en cualquier posición. Para retomar, pisá el embrague primero.</div></li>
+      <li><div><b>Palanca a “bajar”.</b> Dejá que baje solo hasta apoyar del todo.</div></li>
+      <li><div><b>Palanca a “pausa”.</b></div></li>
+    </ol>
+  </div>
+  <div class="card">
+    <h2>Desactivar el volteo</h2>
+    <ol class="steps">
+      <li><div><b>Pisar el embrague.</b></div></li>
+      <li><div><b>Caja en neutro.</b></div></li>
+      <li><div><b>Toma de fuerza en apagado</b> y soltar el embrague.</div></li>
+      <li><div>Se apaga el <b>testigo de volteo.</b> Palanca de volteo en “pausa” antes de circular.</div></li>
+    </ol>
+  </div>
+  <div class="card">
+    <h2>Nunca</h2>
+    <ul class="never">
+      <li>Circular con el cajón levantado.</li>
+      <li>Entrar o dejar a alguien debajo del cajón sin apoyarlo antes con el dispositivo de seguridad.</li>
+      <li>Descargar en pendiente de más de 5° o en suelo blando.</li>
+      <li>Levantar con sobrecarga o carga desigual.</li>
+      <li>Bajar el cajón de golpe con carga.</li>
+      <li>Avanzar mientras descargás una carga que todavía no salió.</li>
+      <li>Circular con la bomba del volteo funcionando.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- MARCHA Y APAGADO -->
+<section class="panel" id="p-marcha" role="tabpanel" aria-labelledby="t-marcha" hidden>
+  <div class="card">
+    <h2>En marcha</h2>
+    <ul style="margin:8px 0 0;padding-left:20px">
+      <li>Después de los 3 min de ralentí, subí a 1.000–1.200 rpm.</li>
+      <li>Aumentá carga y vueltas de a poco. Evitá acelerones y descargas bruscas.</li>
+      <li>En rodaje (50 h): carga media. No dejes el motor largo rato a bajas vueltas y sin carga.</li>
+      <li>Selector WP: vacío, media o pesada, según la carga que llevás.</li>
+      <li>Carga repartida, densidad hasta 1.600 kg/m³ y sin pasar el peso máximo de 59.700 kg.</li>
+    </ul>
+    <h3 style="margin-top:16px">Valores normales del motor</h3>
+    <table class="vals">
+      <tr><td>Presión de aceite</td><td>3,5 – 5,8 bar</td></tr>
+      <tr><td>Temperatura del aceite</td><td>85 – 105 °C</td></tr>
+      <tr><td>Refrigerante (salida)</td><td>95 °C o menos</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h2>Al apagar</h2>
+    <ol class="steps">
+      <li><div><b>Después de trabajo pesado:</b> 5 a 10 min en ralentí bajo y sin carga. Mínimo 1 a 2 min si el trabajo fue liviano.</div></li>
+      <li><div>Freno de estacionamiento, caja en neutro, toma de fuerza apagada y palanca de volteo en “pausa”.</div></li>
+      <li><div>Mirá si hay fugas bajo el camión.</div></li>
+    </ol>
+  </div>
+</section>
+
+<!-- SERVICIOS -->
+<section class="panel" id="p-servicios" role="tabpanel" aria-labelledby="t-servicios" hidden>
+  <div class="card">
+    <h2>¿Cuánto falta para el servicio?</h2>
+    <p class="dataline" id="dataline"></p>
+    <div class="kmbox">
+      <label class="fld" for="km">Km del tablero hoy<input class="in" id="km" type="text" inputmode="numeric" autocomplete="off" placeholder="0"></label>
+      <button class="btn alt" id="kmreset" type="button">Usar último dato</button>
+    </div>
+    <p class="note">Escribí los km totales (no el parcial). El cálculo se actualiza solo.</p>
+  </div>
+  <div class="card">
+    <h2>Próximos servicios</h2>
+    <div id="svcnext"></div>
+    <details class="more"><summary>Ver todos los servicios</summary><div id="svcrest"></div></details>
+  </div>
+  <div class="card">
+    <h2>Además, por tiempo</h2>
+    <ul style="margin:8px 0 0;padding-left:20px">
+      <li>Aceite del motor: también cada 2 meses, aunque no se llegue a los km.</li>
+      <li>Refrigerante: una vez por año.</li>
+      <li>Si el combustible, la urea o las condiciones de trabajo son malas, el aceite se cambia a la mitad del intervalo.</li>
+    </ul>
+    <p class="note">Mantenimiento actualiza la fecha y los km de los servicios hechos. Si hiciste uno y no figura, avisá.</p>
+  </div>
+</section>
+
+<!-- ALERTAS -->
+<section class="panel" id="p-alertas" role="tabpanel" aria-labelledby="t-alertas" hidden>
+  <div class="alert stop">
+    <span class="lvl">Parar</span>
+    <h2>Temperatura de refrigerante alta</h2>
+    <p>Más de 95 °C o aguja cerca del rojo. Parar en lugar seguro, dejar en ralentí sin carga unos minutos y apagar. No abrir la tapa del depósito caliente. Avisar.</p>
+  </div>
+  <div class="alert stop">
+    <span class="lvl">Parar</span>
+    <h2>Presión de aceite baja o testigo rojo de aceite</h2>
+    <p>Parar y apagar el motor enseguida. No seguir.</p>
+  </div>
+  <div class="alert stop">
+    <span class="lvl">Parar</span>
+    <h2>Fuga o volteo que no responde</h2>
+    <p>Fuga de aceite hidráulico, cajón que sube o baja solo, o que no baja. No usar el volteo y avisar.</p>
+  </div>
+  <div class="alert watch">
+    <span class="lvl">Controlar</span>
+    <h2>Testigo naranja de nivel de refrigerante</h2>
+    <p>Es el depósito con ondas. Puede encenderse al arrancar y apagarse solo. Con el motor frío, revisá el nivel y completá si falta. Si queda fijo o sube la temperatura, parar.</p>
+  </div>
+  <div class="alert watch">
+    <span class="lvl">Controlar</span>
+    <h2>Urea baja</h2>
+    <p>Con 10 % o menos hay alarma en el tablero. Cargá antes de que el motor limite la potencia.</p>
+  </div>
+  <div class="alert watch">
+    <span class="lvl">Controlar</span>
+    <h2>Humo muy negro, blanco o azul</h2>
+    <p>Parar y revisar el motor: pérdidas de agua, aire o aceite.</p>
+  </div>
+  <footer>Basada en los manuales del fabricante (motor Weichai WP13, carrocería CIMC Huajun, manual XCMG). Los pasos marcados “confirmar” son provisorios hasta verificarlos con el camión.</footer>
+</section>
+
+<!-- TESTIGOS -->
+<section class="panel" id="p-testigos" role="tabpanel" aria-labelledby="t-testigos" hidden>
+  <div class="card">
+    <h2>Testigos del tablero</h2>
+    <p class="sub">Según el manual XCMG. Los colores son los del tablero.</p>
+    <h3>Rojo: parar y avisar</h3>
+    <div class="lights">
+      <div class="lt r"><i></i><div><b>Temperatura de agua excesiva</b><span>Parar en lugar seguro y apagar.</span></div></div>
+      <div class="lt r"><i></i><div><b>Presión de aceite del motor</b><span>Apagar el motor enseguida.</span></div></div>
+      <div class="lt r"><i></i><div><b>Circuito 1 o 2 de freno (aire)</b><span>No seguir circulando.</span></div></div>
+      <div class="lt r"><i></i><div><b>Falla de la caja de cambios</b></div></div>
+      <div class="lt r"><i></i><div><b>Sobrerrégimen del motor</b><span>Bajar vueltas y cambiar a una marcha más alta o frenar.</span></div></div>
+      <div class="lt r"><i></i><div><b>Carga (batería)</b><span>El alternador no carga. Parar pronto.</span></div></div>
+      <div class="lt r"><i></i><div><b>Solicitud de regeneración del filtro de partículas</b><span>Seguir el procedimiento de regeneración y avisar.</span></div></div>
+      <div class="lt r"><i></i><div><b>Freno de estacionamiento</b><span>Encendido es normal con el freno puesto.</span></div></div>
+      <div class="lt r"><i></i><div><b>Puerta abierta · Cinturón · Airbag · Antirrobo</b></div></div>
+    </div>
+    <h3>Amarillo: revisar pronto</h3>
+    <div class="lights">
+      <div class="lt y"><i></i><div><b>Falla del motor</b><span>Avisar. Si hay pérdida de potencia o ruidos, parar.</span></div></div>
+      <div class="lt y"><i></i><div><b>Separador de agua y combustible</b><span>Hay agua. Purgar o avisar.</span></div></div>
+      <div class="lt y"><i></i><div><b>Filtro de aire obstruido</b></div></div>
+      <div class="lt y"><i></i><div><b>Combustible bajo</b></div></div>
+      <div class="lt y"><i></i><div><b>ABS · ASR · TCS · control de estabilidad</b><span>El frenado normal sigue, pero sin la ayuda electrónica. Avisar.</span></div></div>
+      <div class="lt y"><i></i><div><b>Desgaste de pastillas de freno</b></div></div>
+      <div class="lt y"><i></i><div><b>Presión de neumáticos</b></div></div>
+      <div class="lt y"><i></i><div><b>Freno de escape</b><span>Aparece solo si el camión lo tiene y está activado.</span></div></div>
+    </div>
+    <h3>Azul y verde: informan</h3>
+    <div class="lights">
+      <div class="lt b"><i></i><div><b>Nivel de urea (azul)</b><span>Cargar antes de que llegue a 10 %.</span></div></div>
+      <div class="lt b"><i></i><div><b>Luz alta (azul)</b></div></div>
+      <div class="lt g"><i></i><div><b>Regeneración del filtro en curso</b><span>No apagar el motor mientras dure.</span></div></div>
+      <div class="lt g"><i></i><div><b>Luz baja · giros · antiniebla · crucero</b></div></div>
+    </div>
+    <p class="note">En la pantalla LCD también aparece el nivel bajo del aceite de dirección. El testigo naranja del depósito con ondas está en la pestaña Alertas.</p>
+  </div>
+</section>
+
+<!-- PARTE DEL DÍA -->
+<section class="panel" id="p-parte" role="tabpanel" aria-labelledby="t-parte" hidden>
+  <div class="card">
+    <h2>Parte del día</h2>
+    <p class="sub">Completá, copiá y pegá el mensaje en WhatsApp junto con la foto del tablero.</p>
+    <div class="grid2">
+      <label class="fld" for="pkm">Km<input class="in" id="pkm" type="text" inputmode="numeric" autocomplete="off" placeholder="0"></label>
+      <label class="fld" for="phs">Horas motor<input class="in" id="phs" type="text" inputmode="decimal" autocomplete="off" placeholder="0,0"></label>
+      <label class="fld" for="pur">Urea %<input class="in" id="pur" type="text" inputmode="numeric" autocomplete="off" placeholder="0"></label>
+      <label class="fld" for="pvl">Viajes (volteos)<input class="in" id="pvl" type="text" inputmode="numeric" autocomplete="off" placeholder="0"></label>
+    </div>
+    <h3 style="margin-top:16px">Novedades</h3>
+    <div class="chips" id="chips">
+      <button class="chip" type="button" aria-pressed="false">Sin novedades</button>
+      <button class="chip" type="button" aria-pressed="false">Testigo encendido</button>
+      <button class="chip" type="button" aria-pressed="false">Fuga</button>
+      <button class="chip" type="button" aria-pressed="false">Ruido raro</button>
+      <button class="chip" type="button" aria-pressed="false">Volteo con problema</button>
+      <button class="chip" type="button" aria-pressed="false">Falta aceite o refrigerante</button>
+    </div>
+    <label class="fld" for="pnot" style="margin-top:12px">Detalle<textarea class="in" id="pnot" placeholder="Qué pasó, dónde y cuándo"></textarea></label>
+  </div>
+  <div class="card">
+    <h2>Mensaje</h2>
+    <pre class="msg" id="msg"></pre>
+    <div class="row">
+      <button class="btn" id="copy" type="button">Copiar mensaje</button>
+      <a class="btn alt" id="wa" href="#" target="_blank" rel="noopener">Abrir WhatsApp</a>
+    </div>
+    <p class="note" id="copied" aria-live="polite">Acordate de mandar también la foto del tablero.</p>
+  </div>
+</section>
+</div>
+
+<script>
+(function(){
+  var tabs=[].slice.call(document.querySelectorAll('.tab'));
+  function show(id){
+    tabs.forEach(function(t){
+      var on=t.id==='t-'+id; t.setAttribute('aria-selected',on?'true':'false');
+      document.getElementById(t.getAttribute('aria-controls')).hidden=!on;
+      if(on&&t.scrollIntoView){try{t.scrollIntoView({inline:'center',block:'nearest'})}catch(e){}}
+    });
+    try{localStorage.setItem('guia.tab',id)}catch(e){}
+    window.scrollTo(0,0);
+  }
+  tabs.forEach(function(t){t.addEventListener('click',function(){show(t.id.slice(2))})});
+  var last=null;try{last=localStorage.getItem('guia.tab')}catch(e){}
+  if(last&&document.getElementById('t-'+last))show(last);
+
+  var boxes=[].slice.call(document.querySelectorAll('#checklist input'));
+  var today=new Date().toISOString().slice(0,10);
+  function count(){document.getElementById('count').textContent=boxes.filter(function(b){return b.checked}).length+' de '+boxes.length}
+  function save(){try{localStorage.setItem('guia.chk',JSON.stringify({d:today,ids:boxes.filter(function(b){return b.checked}).map(function(b){return b.dataset.id})}))}catch(e){}}
+  try{var s=JSON.parse(localStorage.getItem('guia.chk')||'null');
+    if(s&&s.d===today)boxes.forEach(function(b){b.checked=s.ids.indexOf(b.dataset.id)>-1})}catch(e){}
+  boxes.forEach(function(b){b.addEventListener('change',function(){save();count()})});
+  document.getElementById('reset').addEventListener('click',function(){boxes.forEach(function(b){b.checked=false});save();count()});
+  count();
+
+  /* ---- Datos del tablero: los actualiza el administrador ---- */
+  var DATA={fecha:'2026-10-16',km:1669,horas:53.1};
+  /* Servicios hechos: id -> km en que se hizo. Vacío: camión nuevo. */
+  var HECHOS={};
+  /* [id, nombre, detalle, primerKm, cadaKm, ancla] */
+  var SV=[
+    ['t02','Revisión de rodaje','Bulones U, niveles y engrase',2500,0,'ultimo'],
+    ['t06','Aceite de motor y 2 filtros de aceite','Cada 10.000 km (el primero a los 2.500)',2500,10000,'ultimo'],
+    ['t04','Aceite de dirección y filtro del depósito','',2500,20000,'multiplo'],
+    ['t03','Aceite de ejes','',3000,15000,'multiplo'],
+    ['t05','Aceite de la caja Fast','A verificar',5000,50000,'ultimo'],
+    ['t10','Engrase de chasis y transmisión','',5000,5000,'ultimo'],
+    ['t07','Filtros de combustible','Separador y filtro fino',10000,10000,'ultimo'],
+    ['t16','Juego de válvulas, bomba de agua y correa','',10000,10000,'ultimo'],
+    ['t11','Engrase de reguladores, cubos, eje de balanceo y cerradura','',10000,10000,'ultimo'],
+    ['t12','Urea: limpieza de tanque, filtro y malla del sensor','',10000,10000,'ultimo'],
+    ['t15','Urea: bomba, boquilla y filtro de la bomba','Intervalo a confirmar',10000,10000,'ultimo'],
+    ['t08','Filtro de aire','',30000,30000,'ultimo'],
+    ['t09','Secador de aire','',30000,30000,'multiplo'],
+    ['t13','Líquido de embrague','',50000,50000,'ultimo'],
+    ['t14','Aceite de la bomba de volteo de la cabina','',60000,60000,'ultimo'],
+    ['t17','Turbo: juego del cojinete','',80000,80000,'ultimo']
+  ];
+  function nf(n){return Math.round(n).toLocaleString('es-AR')}
+  function fdate(iso){var p=iso.split('-');return p[2]+'/'+p[1]+'/'+p[0]}
+  function due(t){
+    var last=HECHOS[t[0]];
+    if(last==null)return t[3];
+    if(!t[4])return null;
+    return t[5]==='multiplo'?(Math.floor(last/t[4])+1)*t[4]:last+t[4];
+  }
+  var kmIn=document.getElementById('km');
+  function num(v){var n=parseFloat(String(v).replace(/\./g,'').replace(',','.'));return isNaN(n)?null:n}
+  function render(){
+    var km=num(kmIn.value); if(km==null)km=DATA.km;
+    var rows=SV.map(function(t){var d=due(t);return {t:t,d:d,rem:d==null?null:d-km}}).filter(function(r){return r.d!=null});
+    rows.sort(function(a,b){return a.rem-b.rem});
+    function html(r){
+      var t=r.t,iv=t[4]||t[3],rem=r.rem;
+      var cls=rem<0?'bad':(rem<=Math.max(500,iv*.1)?'warn':'ok');
+      var pct=Math.max(0,Math.min(100,100*(1-rem/iv)));
+      var big=rem<0?nf(-rem)+' km':nf(rem)+' km';
+      var lab=rem<0?'vencido':'faltan';
+      return '<div class="svc '+cls+'"><span class="nm">'+t[1]+'</span><span class="rem">'+big+'<small>'+lab+'</small></span>'
+        +'<p class="dt">A los '+nf(r.d)+' km'+(t[2]?' · '+t[2]:'')+'</p><div class="bar"><i style="width:'+pct.toFixed(0)+'%"></i></div></div>';
+    }
+    document.getElementById('svcnext').innerHTML=rows.slice(0,4).map(html).join('');
+    document.getElementById('svcrest').innerHTML=rows.slice(4).map(html).join('');
+  }
+  document.getElementById('dataline').innerHTML='Último dato del tablero, '+fdate(DATA.fecha)+': <b>'+nf(DATA.km)+' km</b> · <b>'+String(DATA.horas).replace('.',',')+' h</b> de motor';
+  try{var sk=localStorage.getItem('guia.km');if(sk&&sk.split('|')[0]===DATA.fecha)kmIn.value=sk.split('|')[1]}catch(e){}
+  if(!kmIn.value)kmIn.value=nf(DATA.km);
+  kmIn.addEventListener('input',function(){render();try{localStorage.setItem('guia.km',DATA.fecha+'|'+kmIn.value)}catch(e){};msg()});
+  document.getElementById('kmreset').addEventListener('click',function(){kmIn.value=nf(DATA.km);try{localStorage.removeItem('guia.km')}catch(e){};render()});
+
+  /* ---- Parte del día ---- */
+  var chips=[].slice.call(document.querySelectorAll('#chips .chip'));
+  var f={pkm:document.getElementById('pkm'),phs:document.getElementById('phs'),pur:document.getElementById('pur'),pvl:document.getElementById('pvl'),pnot:document.getElementById('pnot')};
+  function msg(){
+    if(!f.pkm.value&&document.activeElement!==f.pkm)f.pkm.placeholder=kmIn.value||'0';
+    var d=new Date(),dd=('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear();
+    var nov=chips.filter(function(c){return c.getAttribute('aria-pressed')==='true'}).map(function(c){return c.textContent});
+    var L=['Parte XCMG NXG3310D5WE · '+dd,'Km: '+(f.pkm.value||'-'),'Horas motor: '+(f.phs.value||'-'),'Urea: '+(f.pur.value?f.pur.value+' %':'-')];
+    if(f.pvl.value)L.push('Viajes: '+f.pvl.value);
+    L.push('Novedades: '+(nov.length?nov.join(', '):'-'));
+    if(f.pnot.value.trim())L.push('Detalle: '+f.pnot.value.trim());
+    var t=L.join('\n');
+    document.getElementById('msg').textContent=t;
+    document.getElementById('wa').href='https://wa.me/?text='+encodeURIComponent(t);
+    return t;
+  }
+  chips.forEach(function(c){c.addEventListener('click',function(){
+    var on=c.getAttribute('aria-pressed')!=='true';
+    if(on&&c.textContent==='Sin novedades')chips.forEach(function(o){o.setAttribute('aria-pressed','false')});
+    if(on&&c.textContent!=='Sin novedades')chips[0].setAttribute('aria-pressed','false');
+    c.setAttribute('aria-pressed',on?'true':'false');msg()})});
+  Object.keys(f).forEach(function(k){f[k].addEventListener('input',msg)});
+  document.getElementById('copy').addEventListener('click',function(){
+    var t=msg(),note=document.getElementById('copied'),pre=document.getElementById('msg');
+    function sel(){var r=document.createRange();r.selectNodeContents(pre);var s=window.getSelection();s.removeAllRanges();s.addRange(r);note.textContent='Mantené apretado el texto marcado y elegí Copiar.'}
+    try{navigator.clipboard.writeText(t).then(function(){note.textContent='Copiado. Pegalo en WhatsApp y mandá también la foto del tablero.'},sel)}catch(e){sel()}
+  });
+  render();msg();
+})();
+</script>
+
+</body></html>

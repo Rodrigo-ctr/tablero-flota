@@ -1,0 +1,289 @@
+{
+ "cn5": {
+  "titulo": "Cosechadora salinera MAQTEC",
+  "fabricante": "MAQTEC (Venado Tuerto, Santa Fe)",
+  "secciones": [
+   {
+    "t": "Motor",
+    "filas": [
+     [
+      "Motor",
+      "John Deere 6068T"
+     ],
+     [
+      "Aceite",
+      "19 L · Plus-50 JD (500 h) o multigrado 15W40 (250 h) · en uso Valvoline o Shell Rimula"
+     ],
+     [
+      "Filtro de aceite",
+      "JD RE59754 · alt. Fram PH8476, TurboFilter TB3711"
+     ],
+     [
+      "Filtros de combustible",
+      "JD RE509032 (primario) y RE62419 (final) · alt. TurboFilter TBC877, Darmet G-1315"
+     ],
+     [
+      "Filtros de aire",
+      "JD AT225338 (exterior) y AT225339 (interior)"
+     ],
+     [
+      "Refrigerante",
+      "20 L Cool-Gard JD, cada 3000 h o 3 años"
+     ]
+    ]
+   },
+   {
+    "t": "Sistema hidráulico",
+    "filas": [
+     [
+      "Aceite",
+      "HD 68, 600 L en dos tanques (trabajo y transmisión)"
+     ],
+     [
+      "Transmisión",
+      "Bomba Sauer-Danfoss serie 40 MPV044 a 2 motores de rueda"
+     ],
+     [
+      "Trabajo",
+      "Bomba 44 cc y PRR90 con controlador de caudal (rotor, cintas y redler)"
+     ],
+     [
+      "Cilindros y dirección",
+      "Sección 22 cc load sensing, 7 cilindros"
+     ],
+     [
+      "Filtros",
+      "3 Parker 936974Q, 2 OMT CS10EN, 1 OMT CS05BN · cada 1000 h · alt. Darmet G-360, Motorline ML6177H"
+     ]
+    ]
+   },
+   {
+    "t": "Otros",
+    "filas": [
+     [
+      "Caja acopladora",
+      "Brevini BZ340 · 3,6 L ISO VG 220 mineral EP (en uso 80W90, a verificar)"
+     ],
+     [
+      "Grasa",
+      "NLGI 2"
+     ],
+     [
+      "Horas de motor",
+      "Pantalla DP200, botón 4 (Parámetros)"
+     ],
+     [
+      "Aire acondicionado",
+      "Equipo Climatic (la sección de 22 cc original quedó libre)"
+     ]
+    ]
+   }
+  ],
+  "nota": "Año 2018. Desde abr-2024 tiene la reguladora de caudal de la CN°7: 120 bar en carga, 260 RPM en cintas."
+ },
+ "cn6": {
+  "titulo": "Cosechadora salinera MAQTEC",
+  "fabricante": "MAQTEC (Venado Tuerto, Santa Fe)",
+  "secciones": [
+   {
+    "t": "Motor",
+    "filas": [
+     [
+      "Motor",
+      "John Deere 6068T"
+     ],
+     [
+      "Aceite",
+      "19 L · Plus-50 JD (500 h) o multigrado 15W40 (250 h) · en uso Valvoline o Shell Rimula"
+     ],
+     [
+      "Filtro de aceite",
+      "JD RE59754 · alt. Fram PH8476, TurboFilter TB3711"
+     ],
+     [
+      "Filtros de combustible",
+      "JD RE509032 (primario) y RE62419 (final) · alt. TurboFilter TBC877, Darmet G-1315"
+     ],
+     [
+      "Filtros de aire",
+      "JD AT225338 (exterior) y AT225339 (interior)"
+     ],
+     [
+      "Refrigerante",
+      "20 L Cool-Gard JD, cada 3000 h o 3 años"
+     ]
+    ]
+   },
+   {
+    "t": "Sistema hidráulico",
+    "filas": [
+     [
+      "Aceite",
+      "HD 68, 600 L en dos tanques (trabajo y transmisión)"
+     ],
+     [
+      "Transmisión",
+      "Bomba Sauer-Danfoss serie 40 MPV044 a 2 motores de rueda"
+     ],
+     [
+      "Trabajo",
+      "Bomba 44 cc y PRR90 con controlador de caudal (rotor, cintas y redler)"
+     ],
+     [
+      "Cilindros y dirección",
+      "Sección 22 cc load sensing, 7 cilindros"
+     ],
+     [
+      "Filtros",
+      "3 Parker 936974Q, 2 OMT CS10EN, 1 OMT CS05BN · cada 1000 h · alt. Darmet G-360, Motorline ML6177H"
+     ]
+    ]
+   },
+   {
+    "t": "Otros",
+    "filas": [
+     [
+      "Caja acopladora",
+      "Brevini BZ340 · 3,6 L ISO VG 220 mineral EP (en uso 80W90, a verificar)"
+     ],
+     [
+      "Grasa",
+      "NLGI 2"
+     ],
+     [
+      "Horas de motor",
+      "Pantalla DP200, botón 4 (Parámetros)"
+     ],
+     [
+      "Aire acondicionado",
+      "Equipo Climatic (la sección de 22 cc original quedó libre)"
+     ]
+    ]
+   }
+  ],
+  "nota": "Año 2018. Dic-2024: circuito de cintas dividido (CF cinta principal, CE traseras); 80/90 bar normal, limitadora 140 bar."
+ },
+ "cn7": {
+  "titulo": "Cosechadora salinera MAQTEC",
+  "fabricante": "MAQTEC (Venado Tuerto, Santa Fe)",
+  "secciones": [
+   {
+    "t": "Motor",
+    "filas": [
+     [
+      "Motor",
+      "John Deere 6068T"
+     ],
+     [
+      "Aceite",
+      "19 L · Plus-50 JD (500 h) o multigrado 15W40 (250 h) · en uso Valvoline o Shell Rimula"
+     ],
+     [
+      "Filtro de aceite",
+      "JD RE59754 · alt. Fram PH8476, TurboFilter TB3711"
+     ],
+     [
+      "Filtros de combustible",
+      "JD RE509032 (primario) y RE62419 (final) · alt. TurboFilter TBC877, Darmet G-1315"
+     ],
+     [
+      "Filtros de aire",
+      "JD AT225338 (exterior) y AT225339 (interior)"
+     ],
+     [
+      "Refrigerante",
+      "20 L Cool-Gard JD, cada 3000 h o 3 años"
+     ]
+    ]
+   },
+   {
+    "t": "Sistema hidráulico",
+    "filas": [
+     [
+      "Aceite",
+      "HD 68, 600 L en dos tanques (trabajo y transmisión)"
+     ],
+     [
+      "Transmisión",
+      "Bomba Sauer-Danfoss serie 40 MPV044 a 2 motores de rueda"
+     ],
+     [
+      "Trabajo",
+      "Bomba 44 cc y PRR90 con controlador de caudal (rotor, cintas y redler)"
+     ],
+     [
+      "Cilindros y dirección",
+      "Sección 22 cc load sensing, 7 cilindros"
+     ],
+     [
+      "Filtros",
+      "3 Parker 936974Q, 2 OMT CS10EN, 1 OMT CS05BN · cada 1000 h · alt. Darmet G-360, Motorline ML6177H"
+     ]
+    ]
+   },
+   {
+    "t": "Otros",
+    "filas": [
+     [
+      "Caja acopladora",
+      "Brevini BZ340 · 3,6 L ISO VG 220 mineral EP (en uso 80W90, a verificar)"
+     ],
+     [
+      "Grasa",
+      "NLGI 2"
+     ],
+     [
+      "Horas de motor",
+      "Pantalla DP200, botón 4 (Parámetros)"
+     ],
+     [
+      "Aire acondicionado",
+      "Equipo Climatic (la sección de 22 cc original quedó libre)"
+     ]
+    ]
+   }
+  ],
+  "nota": "Año 2022. Circuito distinto: bomba de 48 cc en cintas, sin reguladora de caudal, motor a 2350 RPM. Bomba hidráulica en reparación por agua en el aceite (OT-0001)."
+ },
+ "xcmg": {
+  "titulo": "Camión volcador XCMG NXG3310D5WE",
+  "fabricante": "XCMG · motor Weichai WP13.550 · caja Fast 12 vel. manual",
+  "nota": "Uso de obra / volquete. Plan de service por km según manual Weichai y Fascículo 2.",
+  "secciones": [
+   {
+    "t": "Motor",
+    "filas": [
+     [
+      "Aceite de motor",
+      "25–28 L CH-4/CI-4 o superior, cada 10.000 km o 2 meses"
+     ],
+     [
+      "Filtros",
+      "Aceite (2), separador de agua y filtro fino de combustible cada 10.000 km"
+     ],
+     [
+      "Urea",
+      "Limpieza de tanque, filtro y bomba cada 10.000 km"
+     ]
+    ]
+   },
+   {
+    "t": "Transmisión y ejes",
+    "filas": [
+     [
+      "Ejes",
+      "85W/90 GL-5 cada 15.000 km"
+     ],
+     [
+      "Caja Fast",
+      "85W/90 GL-5, 12,5 L, cada 50.000 km (verificar con manual de la caja)"
+     ],
+     [
+      "Dirección hidráulica",
+      "ATF IID o 15W/40, 6 L, cada 20.000 km"
+     ]
+    ]
+   }
+  ]
+ }
+}

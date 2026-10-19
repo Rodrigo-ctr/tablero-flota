@@ -1,0 +1,294 @@
+<title>Tablero de Flota</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: parte semanal de flota — banda de encabezado, fila de indicadores, paneles en dos columnas que se apilan en el celular */
+:root{
+  --bg:#F2F3F0; --panel:#FFFFFF; --ink:#1B2220; --muted:#5C6662; --line:#D8DCD6; --soft:#ECEEEA;
+  --accent:#C98A00; --accent-soft:#F7E9C4; --bar:#8A6A1F;
+  --euro:#167A72; --euro-soft:#D6EFEC; --steel:#1F5B73; --steel-soft:#DCEAF0;
+  --ok:#2F7A3A; --ok-soft:#DCEFDD; --warn:#9A4A0C; --warn-soft:#F8E1CF; --bad:#B3261E; --bad-soft:#F6D9D6;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#131816; --panel:#1B2120; --ink:#E6EAE7; --muted:#9AA4A0; --line:#313937; --soft:#232a28;
+  --accent:#E5A82A; --accent-soft:#3A2E12; --bar:#D9A440;
+  --euro:#4FC2B6; --euro-soft:#173532; --steel:#6FB6D3; --steel-soft:#16303A;
+  --ok:#6CC27A; --ok-soft:#1D3321; --warn:#F0965A; --warn-soft:#3B2617; --bad:#F2867D; --bad-soft:#3E1D1A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#131816; --panel:#1B2120; --ink:#E6EAE7; --muted:#9AA4A0; --line:#313937; --soft:#232a28;
+  --accent:#E5A82A; --accent-soft:#3A2E12; --bar:#D9A440;
+  --euro:#4FC2B6; --euro-soft:#173532; --steel:#6FB6D3; --steel-soft:#16303A;
+  --ok:#6CC27A; --ok-soft:#1D3321; --warn:#F0965A; --warn-soft:#3B2617; --bad:#F2867D; --bad-soft:#3E1D1A; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px 20px;padding-block:22px 14px;border-bottom:3px solid var(--ink)}
+h1{font-family:var(--display);font-weight:700;font-size:36px;line-height:1;margin:0;text-transform:uppercase;letter-spacing:.01em}
+h1 span{color:var(--accent)}
+.sub{color:var(--muted);font-size:13px;margin-top:4px}
+.stamp{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.stamp b{font-family:var(--mono);font-weight:500;font-size:15px}
+.ro{display:inline-block;font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);padding:2px 8px;border-radius:99px}
+main{display:flex;flex-direction:column;gap:18px;padding-top:18px}
+h2{font-family:var(--display);font-size:21px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;margin:0;text-wrap:balance}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 12px}
+.note{font-size:13px;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+@media (max-width:860px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px}
+.tile{background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--line);border-radius:4px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.tile .n{font-family:var(--display);font-weight:700;font-size:38px;line-height:1;font-variant-numeric:tabular-nums}
+.tile .l{font-size:13px;color:var(--muted)}
+.tile.bad{border-left-color:var(--bad)} .tile.bad .n{color:var(--bad)}
+.tile.warn{border-left-color:var(--warn)} .tile.warn .n{color:var(--warn)}
+.tile.ok{border-left-color:var(--ok)} .tile.steel{border-left-color:var(--steel)} .tile.steel .n{color:var(--steel)}
+.tile.amber{border-left-color:var(--accent)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.pill{display:inline-block;padding:1px 8px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.steel{background:var(--steel-soft);color:var(--steel)} .pill.euro{background:var(--euro-soft);color:var(--euro)} .pill.na{background:var(--soft);color:var(--muted)}
+.gas{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.gas .big{font-family:var(--display);font-weight:700;font-size:56px;line-height:.95}
+.gas small{font-size:20px;color:var(--muted);font-family:var(--display)}
+.gauge{height:12px;background:var(--soft);border-radius:2px;position:relative;overflow:hidden}
+.gauge i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:0 4px 4px 0}
+.gauge.low i{background:var(--bad)}
+.gauge u{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--ink)}
+.kv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.kv div{display:flex;flex-direction:column;min-width:0}
+.kv b{font-family:var(--mono);font-weight:500;font-size:16px}
+.kv span{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:4px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:7px 9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+tr:last-child td{border-bottom:0}
+th{font-family:var(--display);font-weight:600;font-size:13.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);background:var(--soft);white-space:nowrap}
+td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+td.sev{padding:0;width:6px}
+td.sev i{display:block;width:6px;min-height:36px}
+.s-bad i{background:var(--bad)} .s-warn i{background:var(--warn)} .s-ok i{background:var(--ok)} .s-na i{background:var(--line)}
+.chart{display:flex;flex-direction:column;gap:6px}
+.cols{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:6px;align-items:end;height:170px;border-bottom:1px solid var(--line);padding-top:20px}
+.col{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;position:relative;min-width:0}
+.col .bar{width:100%;max-width:44px;background:var(--bar);border-radius:4px 4px 0 0;min-height:2px}
+.col .v{font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:3px;white-space:nowrap}
+.col:hover .bar,.col:focus-visible .bar{background:var(--accent)}
+.col:hover .v{color:var(--ink)}
+.labels{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:6px;font-size:12px;color:var(--muted);text-align:center}
+.hbars{display:flex;flex-direction:column;gap:7px}
+.hb{display:grid;grid-template-columns:minmax(110px,180px) minmax(0,1fr) 70px;gap:10px;align-items:center;font-size:14px}
+.hb .name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hb .track{height:14px;background:var(--soft);border-radius:0 4px 4px 0;overflow:hidden}
+.hb .fill{height:100%;background:var(--bar);border-radius:0 4px 4px 0}
+.hb:hover .fill{background:var(--accent)}
+.hb .val{text-align:right;font-family:var(--mono);font-size:13px}
+@media (max-width:480px){.hb{grid-template-columns:minmax(0,1fr) 64px}.hb .track{grid-column:1/-1;grid-row:2}}
+.list{display:flex;flex-direction:column}
+.li{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line)}
+.li:last-child{border-bottom:0}
+.li .grow{flex:1;min-width:0}
+.li .t{font-weight:600}
+.ot{border:1px solid var(--line);border-left:6px solid var(--steel);border-radius:4px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.ot .prog{height:8px;background:var(--soft);border-radius:99px;overflow:hidden}
+.ot .prog i{display:block;height:100%;background:var(--steel)}
+.ot ul{margin:0;padding-left:18px;font-size:14px;display:flex;flex-direction:column;gap:2px}
+.ot li.done{color:var(--muted);text-decoration:line-through}
+.otnum{font-family:var(--mono);font-size:13px;border:1px solid var(--ink);padding:1px 6px;border-radius:2px}
+.empty{color:var(--muted);padding:14px 0;text-align:center}
+nav.tabs{display:flex;gap:2px;overflow-x:auto;margin-top:12px;border-bottom:1px solid var(--line)}
+nav.tabs a{font-family:var(--display);font-size:18px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:9px 14px;border-bottom:3px solid transparent;white-space:nowrap}
+nav.tabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--accent)}
+nav.tabs a:focus-visible,.eqc:focus-visible,.back:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.eqgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.eqc{display:grid;grid-template-columns:6px minmax(0,1fr);background:var(--panel);border:1px solid var(--line);border-radius:4px;overflow:hidden;text-decoration:none;color:inherit}
+.eqc:hover{border-color:var(--muted)}
+.eqc>i{display:block} .eqc .in{padding:10px 12px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.eqc .nm{font-weight:600} .eqc .meta{font-size:12.5px;color:var(--muted)}
+.bg-bad{background:var(--bad)} .bg-warn{background:var(--warn)} .bg-ok{background:var(--ok)} .bg-na{background:var(--line)}
+.grp{font-family:var(--display);font-size:16px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:6px 0 -4px}
+.back{background:none;border:0;color:var(--steel);font:inherit;font-weight:600;cursor:pointer;padding:0;text-decoration:underline}
+input.q{font:inherit;font-size:14px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:7px 9px;width:260px;max-width:100%}
+.fic{display:grid;grid-template-columns:minmax(130px,200px) minmax(0,1fr);gap:0;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.fic div{padding:7px 10px;border-bottom:1px solid var(--line);font-size:14px} .fic div:nth-last-child(-n+2){border-bottom:0}
+.fic .k{color:var(--muted);background:var(--soft)}
+@media (max-width:520px){.fic{grid-template-columns:minmax(0,1fr)}.fic .k{border-bottom:0;padding-bottom:0}}
+h3{font-family:var(--display);font-size:16px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:4px 0 0}
+.doc a{color:var(--steel)} .doc a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.doc{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)} .doc:last-child{border-bottom:0}
+footer{margin-top:22px;font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Tablero de <span>Flota</span></h1>
+      <div class="sub">Combustible, mantenimiento y órdenes de trabajo · Salina Las Barrancas</div>
+    </div>
+    <div class="stamp"><span class="ro">Solo lectura</span><span class="note">Datos al <b id="fecha">—</b></span></div>
+  </header>
+  <nav class="tabs" aria-label="Secciones"><a href="#resumen" data-v="resumen">Resumen</a><a href="#equipos" data-v="equipos">Equipos</a><a href="#documentos" data-v="documentos">Documentos</a></nav>
+  <main id="v-resumen">
+    <div class="tiles" id="tiles"></div>
+    <div class="grid2">
+      <section class="panel" id="pGas"></section>
+      <section class="panel"><div class="head"><h2>Lubricantes y grasa</h2><span class="note">Stock actual y punto de pedido</span></div><div class="tbl"><table id="tLub"></table></div></section>
+    </div>
+    <div class="grid2">
+      <section class="panel"><div class="head"><h2>Gasoil consumido por mes</h2><span class="note">Litros del tanque, 2026</span></div><div class="chart" id="cMes"></div></section>
+      <section class="panel"><div class="head"><h2>Mayores consumos</h2><span class="note">Gasoil, últimos 90 días</span></div><div class="hbars" id="cEq"></div></section>
+    </div>
+    <section class="panel"><div class="head"><h2>Services vencidos y próximos</h2><span class="note">Según horas, km o fecha, lo que llegue primero</span></div><div class="tbl"><table id="tServ"></table></div></section>
+    <div class="grid2">
+      <section class="panel"><div class="head"><h2>Órdenes de trabajo abiertas</h2></div><div id="pOt" style="display:flex;flex-direction:column;gap:10px"></div></section>
+      <section class="panel"><div class="head"><h2>Desvíos y avisos</h2><span class="note">Consumo fuera de lo normal y lecturas raras</span></div><div class="list" id="pDes"></div></section>
+    </div>
+  </main>
+  <main id="v-equipos" hidden></main>
+  <main id="v-documentos" hidden>
+    <section class="panel"><div class="head"><h2>Documentos de consulta</h2><span class="note">Se abren en el navegador, en PDF</span></div>
+      <div class="doc"><span class="pill steel">PDF</span><div class="grow"><a href="docs/ficha-tecnica-maqtec.pdf" target="_blank" rel="noopener"><b>Ficha técnica · Cosechadora salinera MAQTEC</b></a><div class="note">Motor, sistema hidráulico con diagrama, lubricantes y equivalentes, plan de mantenimiento, pantalla, modificaciones por máquina y manchones.</div></div></div>
+      <div class="doc"><span class="pill steel">PDF</span><div class="grow"><a href="docs/procedimiento-agua-aceite-hidraulico.pdf" target="_blank" rel="noopener"><b>Procedimiento preventivo · Agua en el aceite hidráulico MAQTEC</b></a><div class="note">Vías de entrada de agua, controles diarios del maquinista, lavado, parada fuera de temporada, muestras de aceite y qué hacer si se detecta agua. Borrador para revisar con MAQTEC.</div></div></div>
+      <div class="doc"><span class="pill steel">Guía</span><div class="grow"><a href="docs/guia-chofer-xcmg.html" target="_blank" rel="noopener"><b>Guía del chofer · Camión XCMG</b></a><div class="note">Control de salida, arranque, volteo, marcha y apagado, servicios, alertas y testigos del tablero.</div></div></div>
+      <div class="note">Los documentos se actualizan junto con el tablero.</div>
+    </section>
+  </main>
+  <footer>Página de consulta generada automáticamente a partir de Gestión de Flota. Para corregir o cargar información, contactar a Rodrigo Aguilera.</footer>
+</div>
+
+<script>
+const DATA=/*__DATA__*/;
+'use strict';
+const PRODS=[{k:'gasoil',n:'Gasoil',u:'L'},{k:'15w40',n:'15W40',u:'L'},{k:'sae40',n:'SAE 40',u:'L'},{k:'sae140',n:'SAE 140',u:'L'},{k:'hd68',n:'HD 68',u:'L'},{k:'hd46',n:'HD 46',u:'L'},{k:'grasa',n:'Grasa',u:'kg'},{k:'80w90',n:'80W90',u:'L'},{k:'atf',n:'ATF',u:'L'}];
+const MESES=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const MESES_L=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=(v,d=0)=>v==null||isNaN(v)?'':Number(v).toLocaleString('es-AR',{maximumFractionDigits:d});
+const fdate=s=>s?s.slice(8,10)+'/'+s.slice(5,7)+'/'+s.slice(0,4):'—';
+const pad=n=>String(n).padStart(2,'0');
+const isoD=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const HOY=DATA.fecha;const today=()=>HOY;
+const addDays=(s,n)=>{const d=new Date(s+'T12:00:00');d.setDate(d.getDate()+Math.round(n));return isoD(d)};
+const daysBetween=(a,b)=>Math.round((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/864e5);
+function addMonths(s,n){const d=new Date(s+'T12:00:00');const day=d.getDate();d.setDate(1);d.setMonth(d.getMonth()+n);const last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();d.setDate(Math.min(day,last));return isoD(d)}
+const endOfMonth=(y,m)=>isoD(new Date(y,m,0));
+const EQ=[...DATA.equipos].sort((a,b)=>a.orden-b.orden);
+const eqById=id=>EQ.find(e=>e.id===id);
+const uName=e=>e?.unidad==='km'?'km':e?.unidad==='h'?'h':'';
+const isEuro=id=>eqById(id)?.combustible==='euro';
+const CARGAS=[...DATA.cargas].sort((a,b)=>a.fecha<b.fecha?-1:a.fecha>b.fecha?1:0);
+const activos=()=>EQ.filter(e=>e.activo!==false&&e.id!=='varios');
+const sevRank={bad:0,warn:1,ok:2,na:3};
+// lecturas
+const RD={};const addR=(e,f,l)=>{if(l==null||l===''||!e||!f||isNaN(l))return;(RD[e]=RD[e]||[]).push({fecha:f,lec:Number(l)})};
+for(const c of CARGAS)addR(c.equipo,c.fecha,c.lectura);for(const s of DATA.services)addR(s.equipo,s.fecha,s.lectura);
+for(const k in RD)RD[k].sort((a,b)=>a.fecha<b.fecha?-1:a.fecha>b.fecha?1:a.lec-b.lec);
+const lecAct=id=>{const r=RD[id];return r&&r.length?r[r.length-1]:null};
+function usoDia(id){const r=RD[id];if(!r||r.length<2)return null;const last=r[r.length-1];const lim=addDays(last.fecha,-120);const first=r.find(x=>x.fecha>=lim&&x.fecha<last.fecha);if(!first)return null;const d=last.lec-first.lec,days=daysBetween(first.fecha,last.fecha);return d>0&&days>0?d/days:null}
+const planOf=e=>DATA.planes.find(p=>p.id===e?.planId);
+const hasLec=s=>s&&s.lectura!=null&&s.lectura!=='';
+function lastServ(eid,tid){let b=null;for(const s of DATA.services)if(s.equipo===eid&&(s.tareas||[]).includes(tid)){const fs=s.fecha||'',fb=b?.fecha||'';if(!b||fs>fb||(fs===fb&&Number(s.lectura||0)>Number(b.lectura||0)))b=s}return b}
+function nextDue(t,ref,hasLast){const c=Number(t.cada)||0,p=Number(t.primero)||0;if(hasLast){if(!c)return null;return t.ancla==='multiplo'?(Math.floor(ref/c)+1)*c:ref+c}if(p&&p>ref)return p;if(!c)return null;return (Math.floor(ref/c)+1)*c}
+function dateDue(t,ls,e){const m=Number(t.mes)||0,n=Number(t.meses)||0;if(!m&&!n)return null;if(m){const after=ls?addDays(ls.fecha,60):today();const y=Number(after.slice(0,4));let d=endOfMonth(y,m);if(d<after)d=endOfMonth(y+1,m);return d}return addMonths(ls?ls.fecha:(e.planFecha||today()),n)}
+function eqItems(e){const pl=planOf(e);if(!pl)return [];const la=lecAct(e.id),cur=la?la.lec:null,uso=usoDia(e.id);const out=[];
+  for(const t of pl.tareas||[]){const ls=lastServ(e.id,t.id);let due=null,rem=null,stH=null;
+    if(Number(t.cada)||Number(t.primero)){const base=ls?(hasLec(ls)?Number(ls.lectura):null):(e.planBase!=null?Number(e.planBase):cur);
+      if(base==null)stH='na';else{due=nextDue(t,base,!!ls);if(due!=null){const span=Number(t.cada)||Number(t.primero)||0;const warn=Math.max(span*0.1,e.unidad==='km'?500:20);rem=cur==null?null:due-cur;stH=rem==null?'na':rem<0?'bad':rem<=warn?'warn':'ok'}}}
+    const fd=dateDue(t,ls,e);let remD=null,stD=null;if(fd){remD=daysBetween(today(),fd);const wd=Number(t.mes)?30:Math.max(15,(Number(t.meses)||0)*3);stD=remD<0?'bad':remD<=wd?'warn':'ok'}
+    if(stH==null&&stD==null)continue;const sts=[stH,stD].filter(s=>s&&s!=='na');const st=sts.length?sts.reduce((m,s)=>sevRank[s]<sevRank[m]?s:m):'na';
+    const urg=Math.min(remD??1e9,rem!=null?(uso?rem/uso:rem):1e9);out.push({e,t,ls,due,rem,st,fd,remD,urg})}
+  return out.sort((a,b)=>a.urg-b.urg)}
+const remTxt=i=>{const u=uName(i.e);const p=[];if(i.rem!=null)p.push(i.rem<0?`pasado ${fmt(-i.rem)} ${u}`:`faltan ${fmt(i.rem)} ${u}`);if(i.remD!=null)p.push(i.remD<0?`vencido el ${fdate(i.fd)}`:`vence el ${fdate(i.fd)}`);return p.join(' · ')};
+function computeStock(){const st=DATA.stock;const res={};for(const p of PRODS)res[p.k]=Number(st.inicial?.[p.k]||0);for(const i of DATA.ingresos)for(const p of PRODS)res[p.k]+=Number(i[p.k]||0);
+  for(const c of CARGAS){if(c.fecha<(st.fechaInicial||'0'))continue;for(const p of PRODS){if(p.k==='gasoil'&&isEuro(c.equipo))continue;res[p.k]-=Number(c[p.k]||0)}}return res}
+function desvios(){const out=[];const lim45=addDays(HOY,-45),lim60=addDays(HOY,-60);
+  for(const e of activos()){if(!e.unidad)continue;const mine=CARGAS.filter(c=>c.equipo===e.id);let prev=null;const iv=[];
+    for(const c of mine){if(c.lectura==null||c.lectura==='')continue;if(prev){const d=Number(c.lectura)-Number(prev.lectura);
+        if(d<0&&c.fecha>=lim60)out.push({sev:'warn',e,t:'Lectura menor que la anterior',d:`${fmt(c.lectura)} ${uName(e)} el ${fdate(c.fecha)} después de ${fmt(prev.lectura)}.`});
+        if(d>0&&Number(c.gasoil)>0)iv.push({c,d,r:e.unidad==='km'?d/Number(c.gasoil):Number(c.gasoil)/d})}prev=c}
+    if(iv.length>=4){const last=iv[iv.length-1];const vals=iv.slice(0,-1).map(x=>x.r).sort((a,b)=>a-b);const med=vals[Math.floor(vals.length/2)];
+      if(med>0&&last.c.fecha>=lim45){const dev=(last.r-med)/med;const worse=e.unidad==='km'?dev<0:dev>0;const ru=e.unidad==='km'?'km/L':'L/h';
+        if(Math.abs(dev)>=0.3)out.push({sev:worse?'bad':'warn',e,t:worse?'Consume más de lo habitual':'Consumo muy por debajo de lo habitual',d:`${fdate(last.c.fecha)}: ${fmt(last.r,1)} ${ru} contra ${fmt(med,1)} ${ru} habitual (${dev>0?'+':''}${fmt(dev*100)}%).`})}}}
+  return out.sort((a,b)=>sevRank[a.sev]-sevRank[b.sev])}
+
+/* render */
+$('fecha').textContent=fdate(HOY);
+const s=computeStock();const k30=addDays(HOY,-30);
+const cons30=CARGAS.filter(c=>c.fecha>=k30&&!isEuro(c.equipo)).reduce((a,c)=>a+Number(c.gasoil||0),0);const perDay=cons30/30;const dias=perDay>0?Math.floor(s.gasoil/perDay):null;
+const gm=Number(DATA.stock.minimo?.gasoil||0),low=s.gasoil<gm,scale=Math.max(s.gasoil,gm*4,1);
+const all=[];for(const e of activos())for(const i of eqItems(e))all.push(i);
+const bad=all.filter(i=>i.st==='bad'),warn=all.filter(i=>i.st==='warn');
+const ots=DATA.ordenes.filter(o=>o.estado!=='cerrada').sort((a,b)=>(a.numero||0)-(b.numero||0));
+const dv=desvios();const lubLow=PRODS.filter(p=>p.k!=='gasoil'&&s[p.k]<Number(DATA.stock.minimo?.[p.k]||0));
+const tile=(cls,n,l)=>`<div class="tile ${cls}"><span class="n">${n}</span><span class="l">${l}</span></div>`;
+$('tiles').innerHTML=tile('amber'+(low?' bad':''),fmt(s.gasoil)+' L',`Gasoil en tanque${dias!=null?' · alcanza '+dias+' días':''}`)
+  +tile(bad.length?'bad':'ok',bad.length,'Services vencidos')+tile(warn.length?'warn':'ok',warn.length,'Services próximos')
+  +tile(ots.length?'steel':'ok',ots.length,'Órdenes abiertas')+tile(lubLow.length?'warn':'ok',lubLow.length,'Lubricantes para pedir');
+$('pGas').innerHTML=`<div class="head"><h2>Gasoil en tanque</h2><span class="pill ${low?'bad':'ok'}">${low?'Pedir gasoil':'Stock OK'}</span></div>
+  <div class="gas"><span class="big num">${fmt(s.gasoil)}</span><small>litros</small></div>
+  <div class="gauge ${low?'low':''}" role="img" aria-label="Stock ${fmt(s.gasoil)} L, punto de pedido ${fmt(gm)} L"><i style="width:${Math.max(0,Math.min(100,s.gasoil/scale*100))}%"></i><u style="left:${gm/scale*100}%"></u></div>
+  <div class="note">La marca negra es el punto de pedido: ${fmt(gm)} L</div>
+  <div class="kv"><div><b>${fmt(cons30)} L</b><span>Consumo 30 días</span></div><div><b>${fmt(perDay)} L</b><span>Promedio diario</span></div><div><b>${dias==null?'—':dias+' días'}</b><span>Alcanza para</span></div></div>
+  <div class="note">No incluye los equipos que cargan Euro Diesel en estación.</div>`;
+$('tLub').innerHTML='<tr><th>Producto</th><th class="n">Stock</th><th class="n">Mínimo</th><th>Estado</th></tr>'+PRODS.filter(p=>p.k!=='gasoil').map(p=>{const m=Number(DATA.stock.minimo?.[p.k]||0),lo=s[p.k]<m;return `<tr><td>${p.n}</td><td class="n">${fmt(s[p.k],1)} ${p.u}</td><td class="n">${fmt(m)} ${p.u}</td><td><span class="pill ${lo?'bad':'ok'}">${lo?'Pedir':'OK'}</span></td></tr>`}).join('');
+// mensual
+const yr=HOY.slice(0,4),mesAct=+HOY.slice(5,7);const mm=Array(12).fill(0);
+for(const c of CARGAS)if(c.fecha.startsWith(yr)&&!isEuro(c.equipo))mm[+c.fecha.slice(5,7)-1]+=Number(c.gasoil||0);
+const months=mm.slice(0,mesAct),mx=Math.max(...months,1);
+$('cMes').innerHTML=`<div class="cols" role="img" aria-label="Gasoil del tanque por mes">${months.map((v,i)=>`<div class="col" tabindex="0" title="${MESES_L[i]}: ${fmt(v)} L${i===mesAct-1?' (mes en curso)':''}"><span class="v">${v>=mx*0.999||i===mesAct-1?fmt(v):''}</span><div class="bar" style="height:${v/mx*100}%;${i===mesAct-1?'opacity:.55':''}"></div></div>`).join('')}</div><div class="labels">${months.map((_,i)=>`<span>${MESES[i]}</span>`).join('')}</div><div class="note">${MESES_L[mesAct-1][0].toUpperCase()+MESES_L[mesAct-1].slice(1)} está en curso (barra más clara). Pasá el mouse o tocá una barra para ver los litros.</div>`;
+// por equipo 90 dias
+const k90=addDays(HOY,-90);const pe={};for(const c of CARGAS)if(c.fecha>=k90&&c.gasoil)pe[c.equipo]=(pe[c.equipo]||0)+Number(c.gasoil);
+const top=Object.entries(pe).sort((a,b)=>b[1]-a[1]).slice(0,10);const tmx=top.length?top[0][1]:1;
+$('cEq').innerHTML=top.length?top.map(([id,v])=>{const e=eqById(id);return `<div class="hb" title="${esc(e?.nombre||id)}: ${fmt(v)} L"><span class="name">${esc(e?.nombre||id)}${e?.combustible==='euro'?' <span class="pill euro">Euro</span>':''}</span><div class="track"><div class="fill" style="width:${v/tmx*100}%"></div></div><span class="val">${fmt(v)} L</span></div>`}).join(''):'<div class="empty">Sin cargas en los últimos 90 días.</div>';
+// services
+const list=[...bad,...warn].sort((a,b)=>sevRank[a.st]-sevRank[b.st]||a.urg-b.urg);
+$('tServ').innerHTML=list.length?'<tr><th></th><th>Equipo</th><th>Tarea</th><th>Estado</th><th>Detalle</th></tr>'+list.map(i=>`<tr><td class="sev s-${i.st}"><i></i></td><td><b>${esc(i.e.nombre)}</b></td><td>${esc(i.t.nombre)}</td><td><span class="pill ${i.st}">${i.st==='bad'?'Vencido':'Próximo'}</span></td><td class="num" style="font-size:13px">${esc(remTxt(i))}</td></tr>`).join(''):'<tr><td class="empty">Ningún equipo tiene services vencidos ni próximos.</td></tr>';
+// ordenes
+const TIPOS={preventivo:'Service preventivo',reparacion:'Reparación',mejora:'Mejora'};
+$('pOt').innerHTML=ots.length?ots.map(o=>{const tt=o.tareas||[],h=tt.filter(t=>t.hecho).length;return `<div class="ot"><div class="head"><span><span class="otnum">OT-${String(o.numero||0).padStart(4,'0')}</span> <b>${esc(eqById(o.equipo)?.nombre||o.equipo)}</b></span><span class="pill ${o.prioridad==='alta'?'bad':'na'}">${o.prioridad==='alta'?'Prioridad alta':'Prioridad '+esc(o.prioridad||'media')}</span></div>
+  <div class="note">${esc(TIPOS[o.tipo]||'')} · desde el ${fdate(o.fecha)} · ${o.estado==='curso'?'En curso':'Pendiente'}</div>
+  ${tt.length?`<div class="prog" aria-label="${h} de ${tt.length} tareas"><i style="width:${h/tt.length*100}%"></i></div><div class="note">${h} de ${tt.length} tareas hechas</div><ul>${tt.map(t=>`<li class="${t.hecho?'done':''}">${esc(t.nombre)}</li>`).join('')}</ul>`:''}</div>`}).join(''):'<div class="empty">No hay órdenes abiertas.</div>';
+$('pDes').innerHTML=dv.length?dv.slice(0,10).map(d=>`<div class="li"><span class="pill ${d.sev==='bad'?'bad':'warn'}">${d.sev==='bad'?'Revisar':'Atención'}</span><div class="grow"><div class="t">${esc(d.e.nombre)} · ${esc(d.t)}</div><div class="note">${esc(d.d)}</div></div></div>`).join(''):'<div class="empty">Sin desvíos de consumo en las últimas semanas.</div>';
+
+/* equipos */
+const GRUPOS=[['uso','Equipos de uso común'],['cosecha','Equipos de cosecha']];
+function eqStatus(e){const it=eqItems(e);if(!it.length)return 'na';return it.reduce((m,i)=>sevRank[i.st]<sevRank[m]?i.st:m,'na')}
+const stTxt={bad:'Service vencido',warn:'Service próximo',ok:'Al día',na:'Sin datos'};
+function lastWork(id){const h=(DATA.historial[id]||[]).filter(x=>x.fecha).sort((a,b)=>b.fecha.localeCompare(a.fecha))[0];const sv=DATA.services.filter(x=>x.equipo===id).sort((a,b)=>b.fecha.localeCompare(a.fecha))[0];
+  const c=[h&&{f:h.fecha,t:h.texto},sv&&{f:sv.fecha,t:(sv.tareasNombres||[]).join(', ')}].filter(Boolean).sort((a,b)=>b.f.localeCompare(a.f));return c[0]||null}
+let Q='';
+function renderEquipos(){const q=Q.trim().toLowerCase();const eqs=activos().filter(e=>!q||(e.nombre+' '+(e.alias||[]).join(' ')).toLowerCase().includes(q));
+  $('v-equipos').innerHTML=`<section class="panel"><div class="head"><h2>Equipos</h2><input class="q" id="q" placeholder="Buscar equipo" aria-label="Buscar equipo" value="${esc(Q)}"></div>
+  <div class="note">Tocá un equipo para ver su ficha técnica, el estado de los services y los últimos mantenimientos. La franja de color indica el estado de mantenimiento.</div>
+  ${GRUPOS.map(([g,gn])=>{const l=eqs.filter(e=>e.grupo===g);return l.length?`<div class="grp">${gn}</div><div class="eqgrid">${l.map(e=>{const st=eqStatus(e),la=lecAct(e.id),lw=lastWork(e.id);return `<a class="eqc" href="#equipo-${esc(e.id)}"><i class="bg-${st}"></i><div class="in"><span class="nm">${esc(e.nombre)}</span><span class="meta">${stTxt[st]}${la?' · '+fmt(la.lec)+' '+uName(e):''}${DATA.fichas[e.id]?' · con ficha':''}</span>${lw?`<span class="meta">Último trabajo: ${fdate(lw.f)}</span>`:''}</div></a>`}).join('')}</div>`:''}).join('')||'<div class="empty">Ningún equipo coincide.</div>'}</section>`;
+  const qi=$('q');qi.oninput=()=>{Q=qi.value;const pos=qi.selectionStart;renderEquipos();const n=$('q');n.focus();try{n.setSelectionRange(pos,pos)}catch(_){}}}
+function renderEquipo(id){const e=eqById(id);if(!e){location.hash='#equipos';return}
+  const la=lecAct(id),uso=usoDia(id),u=uName(e),it=eqItems(e),pl=planOf(e),f=DATA.fichas[id];
+  const cs=CARGAS.filter(c=>c.equipo===id);const gas=cs.reduce((a,c)=>a+Number(c.gasoil||0),0);
+  let prev=null,dsum=0,gsum=0;for(const c of cs){if(c.lectura==null)continue;if(prev){const d=Number(c.lectura)-Number(prev.lectura);if(d>0&&Number(c.gasoil)>0){dsum+=d;gsum+=Number(c.gasoil)}}prev=c}
+  const rend=dsum&&gsum?(e.unidad==='km'?dsum/gsum:gsum/dsum):null;
+  const hist=(DATA.historial[id]||[]).slice().sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
+  const sv=DATA.services.filter(x=>x.equipo===id).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const ot=DATA.ordenes.filter(o=>o.equipo===id);
+  $('v-equipos').innerHTML=`<div><button class="back" type="button" onclick="location.hash='#equipos'">← Todos los equipos</button></div>
+  <section class="panel"><div class="head"><h2>${esc(e.nombre)}</h2><span class="pill ${eqStatus(e)}">${stTxt[eqStatus(e)]}</span></div>
+   <div class="kv" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr))"><div><b>${la?fmt(la.lec)+' '+u:'—'}</b><span>Lectura actual${la?' · '+fdate(la.fecha):''}</span></div><div><b>${uso?fmt(uso,1)+' '+u+'/día':'—'}</b><span>Uso promedio</span></div><div><b>${fmt(gas)} L</b><span>Gasoil en el año</span></div><div><b>${rend?fmt(rend,1)+(e.unidad==='km'?' km/L':' L/h'):'—'}</b><span>Rendimiento</span></div><div><b>${e.combustible==='euro'?'Euro Diesel':'Tanque'}</b><span>Combustible</span></div></div></section>
+  ${f?`<section class="panel"><div class="head"><h2>Ficha técnica</h2><span class="note">${esc(f.titulo)} · ${esc(f.fabricante)}</span></div>${f.nota?`<div class="note" style="color:var(--ink)">${esc(f.nota)}</div>`:''}${f.secciones.map(sx=>`<h3>${esc(sx.t)}</h3><div class="fic">${sx.filas.map(r=>`<div class="k">${esc(r[0])}</div><div>${esc(r[1])}</div>`).join('')}</div>`).join('')}</section>`:`<section class="panel"><div class="head"><h2>Ficha técnica</h2></div><div class="note">Todavía no hay ficha técnica cargada para este equipo.</div></section>`}
+  <section class="panel"><div class="head"><h2>Plan de service</h2><span class="note">${pl?esc(pl.nombre):'Sin plan asignado'}</span></div>${it.length?`<div class="tbl"><table><tr><th></th><th>Tarea</th><th>Último registro</th><th>Estado</th></tr>${it.map(i=>`<tr><td class="sev s-${i.st}"><i></i></td><td>${esc(i.t.nombre)}</td><td class="num" style="font-size:13px">${i.ls?fdate(i.ls.fecha)+(hasLec(i.ls)?' · '+fmt(i.ls.lectura)+' '+u:''):'Sin registro'}</td><td><span class="pill ${i.st}">${{bad:'Vencido',warn:'Próximo',ok:'Al día',na:'Sin dato'}[i.st]}</span> <span class="note num">${esc(remTxt(i))}</span></td></tr>`).join('')}</table></div>`:'<div class="note">Sin tareas para mostrar.</div>'}</section>
+  ${ot.length?`<section class="panel"><div class="head"><h2>Órdenes de trabajo</h2></div>${ot.map(o=>`<div class="li"><span class="otnum">OT-${String(o.numero).padStart(4,'0')}</span><div class="grow"><div class="t">${esc(TIPOS[o.tipo]||'')} · ${o.estado==='cerrada'?'Cerrada':'En curso'} · desde ${fdate(o.fecha)}</div><div class="note">${esc(o.descripcion||'')}</div></div></div>`).join('')}</section>`:''}
+  <section class="panel"><div class="head"><h2>Últimos mantenimientos y reparaciones</h2><span class="note">${hist.length?hist.length+' trabajos en la planilla de reparaciones':''}</span></div>
+   ${hist.length||sv.length?`<div class="list" id="hl">${[...sv.map(x=>({fecha:x.fecha,texto:(x.tareasNombres||[]).join(', ')+(x.notas?' · '+x.notas:''),tipo:'Service'})),...hist].sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||'')).slice(0,12).map(x=>`<div class="li"><span class="num note" style="min-width:84px">${x.fecha?fdate(x.fecha):'s/f'}</span><div class="grow"><div>${x.tipo?'<span class="pill steel">Service</span> ':''}${esc(x.texto)}</div>${(x.repuestos||[]).length?`<div class="note">${x.repuestos.map(r=>esc([r.n,r.q?'× '+r.q:'',r.c,r.m].filter(Boolean).join(' '))).join(' · ')}</div>`:''}${x.quien?`<div class="note">${esc(x.quien)}</div>`:''}</div></div>`).join('')}</div>${hist.length+sv.length>12?'<div class="note">Se muestran los 12 más recientes.</div>':''}`:'<div class="note">Todavía no hay historial cargado para este equipo.</div>'}</section>
+  <section class="panel"><div class="head"><h2>Últimas cargas</h2></div>${cs.length?`<div class="tbl"><table><tr><th>Fecha</th><th class="n">Gasoil</th><th class="n">${e.unidad==='km'?'Km':'Horas'}</th><th>Lubricantes</th></tr>${cs.slice(-8).reverse().map(c=>`<tr><td class="num">${fdate(c.fecha)}</td><td class="n">${c.gasoil?fmt(c.gasoil,1)+' L':''}</td><td class="n">${c.lectura!=null?fmt(c.lectura):''}</td><td style="font-size:13px">${esc(PRODS.filter(p=>p.k!=='gasoil'&&c[p.k]).map(p=>p.n+' '+fmt(c[p.k],1)+' '+p.u).join(' · '))}</td></tr>`).join('')}</table></div>`:'<div class="note">Sin cargas en el año.</div>'}</section>`;
+  window.scrollTo(0,0)}
+function route(){const h=location.hash.slice(1)||'resumen';let v=h.startsWith('equipo-')?'equipos':['resumen','equipos','documentos'].includes(h)?h:'resumen';
+  for(const a of document.querySelectorAll('nav.tabs a'))a.setAttribute('aria-current',a.dataset.v===v?'page':'false');
+  for(const m of ['resumen','equipos','documentos'])$('v-'+m).hidden=m!==v;
+  if(h.startsWith('equipo-'))renderEquipo(h.slice(7));else if(v==='equipos')renderEquipos()}
+window.addEventListener('hashchange',route);route();
+</script>
