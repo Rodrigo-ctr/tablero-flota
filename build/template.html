@@ -150,6 +150,7 @@ footer{margin-top:22px;font-size:12.5px;color:var(--muted);border-top:1px solid 
       <section class="panel" id="pGas"></section>
       <section class="panel"><div class="head"><h2>Lubricantes y grasa</h2><span class="note">Stock actual y punto de pedido</span></div><div class="tbl"><table id="tLub"></table></div></section>
     </div>
+    <section class="panel" id="pEsp" hidden><div class="head"><h2>Aceites especiales</h2><span class="note">Latas del pañol, fuera de la planilla</span></div><div class="tbl"><table id="tEsp"></table></div></section>
     <div class="grid2">
       <section class="panel"><div class="head"><h2>Gasoil consumido por mes</h2><span class="note">Litros del tanque, 2026</span></div><div class="chart" id="cMes"></div></section>
       <section class="panel"><div class="head"><h2>Mayores consumos</h2><span class="note">Gasoil, últimos 90 días</span></div><div class="hbars" id="cEq"></div></section>
@@ -237,7 +238,10 @@ const gm=Number(DATA.stock.minimo?.gasoil||0),low=s.gasoil<gm,scale=Math.max(s.g
 const all=[];for(const e of activos())for(const i of eqItems(e))all.push(i);
 const bad=all.filter(i=>i.st==='bad'),warn=all.filter(i=>i.st==='warn');
 const ots=DATA.ordenes.filter(o=>o.estado!=='cerrada').sort((a,b)=>(a.numero||0)-(b.numero||0));
-const dv=desvios();const lubLow=PRODS.filter(p=>p.k!=='gasoil'&&s[p.k]<Number(DATA.stock.minimo?.[p.k]||0));
+const ESP=[...(DATA.especiales||[])].sort((a,b)=>(a.orden??99)-(b.orden??99));const MOV=Object.fromEntries(ESP.filter(p=>p.planilla).map(p=>[p.planilla,p]));
+const espStock=p=>Number(p.inicial||0)+(p.movs||[]).reduce((a,m)=>a+(m.tipo==='ingreso'?1:-1)*Number(m.cant||0),0)-(p.planilla?CARGAS.filter(c=>c.fecha>=(p.fechaInicial||'0')).reduce((a,c)=>a+Number(c[p.planilla]||0),0):0);
+const espLow=ESP.filter(p=>Number(p.minimo||0)>0&&espStock(p)<Number(p.minimo));
+const dv=desvios();const lubLow=PRODS.filter(p=>p.k!=='gasoil'&&!MOV[p.k]&&s[p.k]<Number(DATA.stock.minimo?.[p.k]||0)).concat(espLow);
 const tile=(cls,n,l)=>`<div class="tile ${cls}"><span class="n">${n}</span><span class="l">${l}</span></div>`;
 $('tiles').innerHTML=tile('amber'+(low?' bad':''),fmt(s.gasoil)+' L',`Gasoil en tanque${dias!=null?' · alcanza '+dias+' días':''}`)
   +tile(bad.length?'bad':'ok',bad.length,'Services vencidos')+tile(warn.length?'warn':'ok',warn.length,'Services próximos')
@@ -248,7 +252,8 @@ $('pGas').innerHTML=`<div class="head"><h2>Gasoil en tanque</h2><span class="pil
   <div class="note">La marca negra es el punto de pedido: ${fmt(gm)} L</div>
   <div class="kv"><div><b>${fmt(cons30)} L</b><span>Consumo 30 días</span></div><div><b>${fmt(perDay)} L</b><span>Promedio diario</span></div><div><b>${dias==null?'—':dias+' días'}</b><span>Alcanza para</span></div></div>
   <div class="note">No incluye los equipos que cargan Euro Diesel en estación.</div>`;
-$('tLub').innerHTML='<tr><th>Producto</th><th class="n">Stock</th><th class="n">Mínimo</th><th>Estado</th></tr>'+PRODS.filter(p=>p.k!=='gasoil').map(p=>{const m=Number(DATA.stock.minimo?.[p.k]||0),lo=s[p.k]<m;return `<tr><td>${p.n}</td><td class="n">${fmt(s[p.k],1)} ${p.u}</td><td class="n">${fmt(m)} ${p.u}</td><td><span class="pill ${lo?'bad':'ok'}">${lo?'Pedir':'OK'}</span></td></tr>`}).join('');
+if(ESP.length){$('pEsp').hidden=false;$('tEsp').innerHTML='<tr><th>Producto</th><th>Tipo</th><th class="n">Stock</th><th class="n">Mínimo</th><th>Se usa en</th><th>Estado</th></tr>'+ESP.map(p=>{const v=espStock(p),m=Number(p.minimo||0),lo=m>0&&v<m;return `<tr><td>${esc(p.nombre)}</td><td style="font-size:13px">${esc([p.tipo,p.spec].filter(Boolean).join(' · '))}</td><td class="n">${fmt(v,1)} ${esc(p.unidad||'L')}</td><td class="n">${m?fmt(m)+' '+esc(p.unidad||'L'):'—'}</td><td style="font-size:13px;white-space:normal">${esc((p.usos||[]).join(', '))}</td><td>${m?`<span class="pill ${lo?'bad':'ok'}">${lo?'Pedir':'OK'}</span>`:''}</td></tr>`}).join('')}
+$('tLub').innerHTML='<tr><th>Producto</th><th class="n">Stock</th><th class="n">Mínimo</th><th>Estado</th></tr>'+PRODS.filter(p=>p.k!=='gasoil'&&!MOV[p.k]).map(p=>{const m=Number(DATA.stock.minimo?.[p.k]||0),lo=s[p.k]<m;return `<tr><td>${p.n}</td><td class="n">${fmt(s[p.k],1)} ${p.u}</td><td class="n">${fmt(m)} ${p.u}</td><td><span class="pill ${lo?'bad':'ok'}">${lo?'Pedir':'OK'}</span></td></tr>`}).join('');
 // mensual
 const yr=HOY.slice(0,4),mesAct=+HOY.slice(5,7);const mm=Array(12).fill(0);
 for(const c of CARGAS)if(c.fecha.startsWith(yr)&&!isEuro(c.equipo))mm[+c.fecha.slice(5,7)-1]+=Number(c.gasoil||0);

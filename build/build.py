@@ -1,7 +1,7 @@
 """Genera index.html del Tablero de Flota.
 Uso: python3 build/build.py <carpeta_datos> <fecha AAAA-MM-DD>
 <carpeta_datos> contiene las colecciones exportadas de Gestión de Flota
-(cargas/, config/, planes/, services/, ordenes/, ingresos/, historial/, controles/),
+(cargas/, config/, planes/, services/, ordenes/, ingresos/, historial/, controles/, especiales/),
 un JSON por documento, tal como las guarda ArtifactData con out_dir."""
 import json, glob, os, sys
 D, FECHA = sys.argv[1], sys.argv[2]
@@ -26,6 +26,8 @@ snap = {
     'historial': {i: d.get('items', []) for i, d in docs('historial')},
     # controles de agua en el aceite: sin nombres de personas en la página pública
     'controles': [dict({k: v for k, v in d.items() if k not in ('operador', 'jefe', 'creado')}, visado=bool(d.get('jefe'))) for _, d in docs('controles')],
+    # aceites especiales (latas): movimientos sin texto libre, que puede nombrar personas
+    'especiales': [dict({k: v for k, v in d.items() if k != 'movs'}, id=i, movs=[{k: m.get(k) for k in ('fecha', 'tipo', 'cant', 'equipo')} for m in (d.get('movs') or {}).values()]) for i, d in docs('especiales')],
     'fichas': json.load(open(os.path.join(HERE, 'fichas.json'))),
 }
 data = json.dumps(snap, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
