@@ -520,7 +520,8 @@ function secDatos(e,isNew){const M=S.modal;
       <div class="fields">${EQF.map(x=>fieldHtml(x,f)).join('')}<label class="f span">Notas<textarea id="ef-notas" data-f="notas">${esc(f.notas||'')}</textarea></label></div>
       <div class="row" style="gap:8px"><button type="button" class="btn primary" data-act="saveeq">Guardar</button>${isNew?'':'<button type="button" class="btn ghost" data-act="canceleq">Cancelar</button>'}</div></div>`}
   const kv=EQF.filter(([k])=>!['codigo','nombre','estado'].includes(k)).map(([k,l])=>`<div><span>${l}</span><b>${esc(k==='tipo'?TIPOS_EQ[e[k]]||'':e[k]||'')||'<span class="muted">—</span>'}</b></div>`).join('');
-  const chapa=e.chapaFoto?`<a href="${esc(blobUrl(e.chapaFoto))}" target="_blank" rel="noopener"><img src="${esc(blobUrl(e.chapaFoto))}" alt="Chapa de ${esc(e.nombre)}" style="max-height:140px;border-radius:4px;border:1px solid var(--line)"></a>`:'';
+  const fotos=[e.chapaFoto,...(e.fotos||[])].filter(Boolean);
+  const chapa=`<div class="row" style="gap:8px;flex-wrap:wrap;align-items:flex-end">${fotos.map((a,i)=>`<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-start"><a href="${esc(blobUrl(a))}" target="_blank" rel="noopener"><img src="${esc(blobUrl(a))}" alt="Foto ${i+1} de ${esc(e.nombre)}" loading="lazy" style="height:140px;max-width:100%;object-fit:cover;border-radius:4px;border:1px solid var(--line)"></a>${i>0||!e.chapaFoto?`<button type="button" class="btn sm ghost danger" data-act="delfoto" data-i="${e.chapaFoto?i-1:i}">Quitar</button>`:'<span class="small muted">Chapa</span>'}</div>`).join('')}<button type="button" class="btn sm" data-act="addfoto">+ Foto</button></div>`;
   return `<div class="kv">${kv}</div>${e.notas?`<div class="small">${esc(e.notas)}</div>`:''}${chapa}
     <div class="row" style="gap:8px"><button type="button" class="btn sm primary" data-act="editeq">Editar datos</button>${S.confirm==='eq'?`<span class="small">Se borra el equipo con sus tareas, registros y manuales. ¿Seguro?</span><button type="button" class="btn sm danger" data-act="deleq">Sí, borrar</button><button type="button" class="btn sm ghost" data-act="noconf">No</button>`:`<button type="button" class="btn sm ghost danger" data-act="conf" data-id="eq">Borrar equipo</button>`}</div>`}
 function tareaForm(f){
@@ -607,7 +608,10 @@ $('fileIn').onchange=async()=>{const file=$('fileIn').files[0];if(!file)return;c
   if(p==='doc-tab'){S.docForm._file=file;if(!S.docForm.titulo)S.docForm.titulo=file.name.replace(/\.[^.]+$/,'');renderDocs();return}
   if(p==='doc-m'){S.modal.form._file=file;if(!S.modal.form.titulo)S.modal.form.titulo=file.name.replace(/\.[^.]+$/,'');renderModal();return}
   if(p==='reg'){S.modal.form._file=file;renderModal();return}
-  if(p==='chapa')readChapa(file)};
+  if(p==='chapa')readChapa(file);
+  if(p==='foto')addFoto(file)};
+async function addFoto(file){const M=S.modal;toast('Subiendo foto…');
+  if(await guard(async()=>{const a=await upload(file);const e=eqById(M.id);await S.db.doc('equipos/'+M.id).update({fotos:[...(e.fotos||[]),a],editado:nowIso()})})){toast('Foto agregada.');renderModal()}}
 async function readChapa(file){const M=S.modal;M.chapaMsg='Leyendo la chapa… puede tardar hasta un minuto.';M.chapaErr=false;renderModal();
   try{const x=await S.sample.json(`La imagen es la foto de la chapa de identificación (placa) de un equipo industrial de una planta de lavado de sal: motor, bomba, reductor, variador, tablero, sensor u otro. Extraé los datos que se lean con seguridad. No inventes: lo que no se vea va en null.
 Respondé SOLO un objeto JSON con estas claves:
@@ -641,6 +645,8 @@ document.addEventListener('click',async ev=>{
     case 'canceleq':case 'cancelform':M.fk=null;M.form=null;S.confirm=null;renderModal();break;
     case 'saveeq':saveEq();break;
     case 'chapa':pickFile('chapa','image/*');break;
+    case 'addfoto':pickFile('foto','image/*');break;
+    case 'delfoto':{const i=Number(b.dataset.i);const e=eqById(M.id);if(!e.fotos||!e.fotos[i]){const r=[...(e.fotos||[])];if(await guard(()=>S.db.doc('equipos/'+M.id).update({chapaFoto:r.shift()||null,fotos:r}))){renderModal()}break}const f=[...e.fotos];f.splice(i,1);if(await guard(()=>S.db.doc('equipos/'+M.id).update({fotos:f}))){toast('Foto quitada.');renderModal()}break}
     case 'conf':S.confirm=id;render();break;
     case 'noconf':S.confirm=null;render();break;
     case 'deleq':{const eid=M.id;const ts=S.tareas.filter(t=>t.equipo===eid),rs=S.registros.filter(r=>r.equipo===eid),ds=S.docs.filter(d=>d.equipo===eid);

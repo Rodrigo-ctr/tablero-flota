@@ -12,7 +12,7 @@ def L(p):
 def docs(col):
     return [dict(L(f), id=os.path.basename(f)[:-5]) for f in sorted(glob.glob(os.path.join(D, col, '*.json')))]
 snap = {
-    'equipos': [{k: v for k, v in e.items() if k != 'chapaFoto'} for e in docs('equipos')],
+    'equipos': [{k: v for k, v in e.items() if k not in ('chapaFoto', 'fotos')} for e in docs('equipos')],
     'tareas': docs('tareas'),
     # sin nombres de personas ni adjuntos en la página pública
     'registros': [{k: v for k, v in r.items() if k not in ('quien', 'adjunto')} for r in docs('registros')],
@@ -26,7 +26,7 @@ shim = ('<script>(function(){const D=' + data + ';'
         'const no=()=>Promise.reject({code:"not_granted"});const ro={set:no,update:no,delete:no};'
         'const col=c=>({onSnapshot(cb){setTimeout(()=>cb({docs:(D[c]||[]).map(x=>({id:x.id,data:()=>x}))}),0);return()=>{}},doc:()=>ro});'
         'window.claude={use:async n=>n==="db"?{collection:col,doc:()=>ro}:null};document.documentElement.classList.add("ro")})()</script>\n')
-acts = ['neweq', 'editeq', 'conf', 'newtarea', 'edittarea', 'hecho', 'newreg', 'newajuste', 'editajuste', 'newdoc', 'editdoc', 'chapa', 'pickdoc', 'pickreg']
+acts = ['neweq', 'editeq', 'conf', 'newtarea', 'edittarea', 'hecho', 'newreg', 'newajuste', 'editajuste', 'newdoc', 'editdoc', 'chapa', 'pickdoc', 'pickreg', 'addfoto', 'delfoto']
 css = '<style>' + ','.join('html.ro [data-act="%s"]' % a for a in acts) + ',html.ro #btnExport{display:none!important}</style>\n'
 banner = '<div class="status" style="margin-top:14px">Vista de solo lectura · datos al ' + f + '. Se actualiza los viernes.</div>\n  <div id="msg"'
 assert tpl.count('<div id="msg"') == 1 and tpl.count("<script>\n'use strict';") == 1
