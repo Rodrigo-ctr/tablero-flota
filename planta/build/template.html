@@ -438,7 +438,7 @@ function hmiSvg(){
   <rect class="pill${nb||nf?' bad':''}" x="1220" y="9" width="320" height="22"/>${T(1380,25,nb||nf?`${nb} VENCIDOS · ${nf} FUERA DE SERVICIO`:'SIN ALARMAS DE MANTENIMIENTO','ptx')}
   <rect class="pill" x="1550" y="9" width="290" height="22"/>${T(1695,25,`${S.equipos.length} EQUIPOS · ${ni} SIN INSTALAR`,'ptx')}`;
   // cañerías salmuera
-  o+=L([[188,140],[228,140],[228,362],[560,362],[560,392]],'quim')+L([[188,275],[214,275],[214,370],[284,370],[284,392]],'quim');
+  o+=L([[188,140],[228,140],[228,362],[560,362],[560,392]],'quim');
   o+=L([[140,760],[178,760],[178,348],[600,348],[600,410],[566,410]],'agua');
   o+=L([[455,625],[482,625],[482,585],[690,585],[690,322],[1150,322]],'limpia');
   for(const x of [800,870,940,1010,1080,1150])o+=L([[x,322],[x,x===800?420:x===870?352:x===940?352:x===1010?455:x===1080?470:470]],'limpia');
@@ -448,7 +448,7 @@ function hmiSvg(){
   o+=L([[310,640],[310,668],[443,668],[443,640]],'limpia')+L([[378,640],[378,668]],'limpia')+L([[290,668],[290,815],[500,815]],'sucia');
   // tanques de químicos
   o+=`<path class="met" d="M52 120a30 8 0 0 1 60 0v52h-60z"/><path d="M58 172v14M106 172v14M50 186h64" stroke="var(--hmi-stroke)" stroke-width="2"/>`+fan('eq-mot-09-13',82,148)+T(82,205,'TANQUE','sm')+T(82,218,'COAGULANTE','sm')+pump('eq-mot-09-01',176,140)+T(176,118,'PUMP01');
-  o+=`<path class="met" d="M52 255a30 8 0 0 1 60 0v52h-60z"/><path d="M58 307v14M106 307v14M50 321h64" stroke="var(--hmi-stroke)" stroke-width="2"/>`+fan('eq-mot-09-14',82,283)+T(82,340,'TANQUE','sm')+T(82,353,'REGULADOR PH','sm')+pump('eq-mot-09-02',176,275)+T(176,253,'PUMP02');
+  o+=`<path class="met" d="M52 255a30 8 0 0 1 60 0v52h-60z"/><path d="M58 307v14M106 307v14M50 321h64" stroke="var(--hmi-stroke)" stroke-width="2"/>`+fan('eq-mot-09-14',82,283)+T(82,340,'TANQUE','sm')+T(82,353,'REGULADOR PH','sm');
   // sedimentadores y ecualizador
   o+=`<path class="met" d="M230 395h100l-42 92h-16z"/>`+fan('eq-mot-09-03',250,420)+T(296,414,'SEP03');
   o+=`<path class="met" d="M345 395h90v48l-34 46h-22l-34 -46z"/>`+T(390,422,'TANK07')+sensor('eq-lsh-09-07',448,402,'LSH')+sensor('eq-lsw-09-07',448,426,'LSW')+sensor('eq-lsl-09-07',448,450,'LSL');
@@ -471,11 +471,11 @@ function hmiSvg(){
     +G('eq-y-20-01',`<rect class="k" x="784" y="420" width="28" height="9" transform="rotate(-12 798 424)"/>`,786,414)+T(760,424,'Y01','lbl','end');
   o+=L([[852,428],[852,450]],'sal')+screw('eq-mot-20-02',820,450,170,0,990,446)+T(912,442,'SCRW02');
   o+=L([[985,468],[985,525]],'sal')+screw('eq-mot-20-03',972,528,180,-48,1100,390)+T(1010,560,'SCRW03');
-  o+=L([[1098,396],[1098,452]],'sal')+`<path class="met" d="M1086 452h24l-4 10h-16z"/><circle class="met" cx="1098" cy="480" r="18"/><circle cx="1098" cy="480" r="7" fill="var(--hmi-m2)" stroke="var(--hmi-stroke)"/>`+T(1140,440,'DRYR01','lbl','start')
+  o+=L([[1098,396],[1098,452]],'sal')+G('eq-dryr01',`<path class="met" d="M1086 452h24l-4 10h-16z"/><circle class="met" cx="1098" cy="480" r="18"/><circle cx="1098" cy="480" r="7" fill="var(--hmi-m2)" stroke="var(--hmi-stroke)"/>`+T(1140,440,'DRYR01','lbl','start'),1116,462)
     +G('eq-mot-30-01-1',`<rect class="k" x="1128" y="452" width="58" height="18" rx="2"/>`,1186,450)+T(1157,465,'MOT1.1','sm')
     +G('eq-mot-30-01-2',`<rect class="k" x="1128" y="476" width="58" height="18" rx="2"/>`,1186,474)+T(1157,489,'MOT1.2','sm')
     +G('eq-radiador-centr-fuga-dryr01',`<rect class="k" x="1060" y="470" width="14" height="22"/><path d="M1062 474h10M1062 479h10M1062 484h10M1062 489h10" stroke="var(--hmi-stroke)"/>`,1060,466);
-  o+=L([[1098,498],[1098,515]],'sal')+belt('eq-cinta-cnvr-05',1080,515,150)+T(1140,545,'CNVR05')+L([[1228,521],[1248,560]],'sal');
+  o+=L([[1098,498],[1098,518],[1248,560]],'sal')+T(1180,528,'CANALETA','sm');
   o+=elev('eq-mot-40-06',1250,282,300,'ELEV06');
   o+=L([[1300,302],[1340,302],[1340,236],[1490,236],[1490,252]],'sal')+G('eq-mot-40-07',`<path class="b" d="M1450 268l40 -16l40 16v8h-80z"/><rect class="k" x="1484" y="262" width="12" height="10"/>`,1530,254)+T(1545,248,'DIST07','lbl','start')+sensor('eq-zsh-40-07',1548,286,'ZSH');
   const SX=[1330,1455,1580,1705];for(const x of SX)o+=L([[1490,276],[x,392]],'sal');
