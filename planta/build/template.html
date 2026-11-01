@@ -37,7 +37,7 @@
   color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45}
-.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+div.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
 header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;padding-block:20px 14px;border-bottom:3px solid var(--ink)}
 .brand h1{font-family:var(--display);font-weight:700;font-size:34px;letter-spacing:.01em;line-height:1;margin:0;text-transform:uppercase}
 .brand h1 span{color:var(--accent)}
@@ -503,13 +503,14 @@ function renderModal(){
   const M=S.modal;if(!M)return;const isNew=M.id==='__new';const e=isNew?{}:eqById(M.id);
   if(!isNew&&!e){closeModal();return}
   if(isNew&&!M.form)M.form={estado:'operativo'};
-  const secs=[['datos','Datos'],['tareas','Preventivos'],['ajustes','Ajustes'],['docs','Manuales'],['hist','Historial']];
+  const secs=[['datos','Datos'],['constr','Construcción'],['tareas','Preventivos'],['ajustes','Ajustes'],['docs','Manuales'],['hist','Historial']];
   const head=`<header><div style="display:flex;flex-direction:column;gap:4px;min-width:0"><h2 id="dlgTitle">${isNew?'Nuevo equipo':`${e.codigo?`<span class="code">${esc(e.codigo)}</span> `:''}${esc(e.nombre)}`}</h2>${isNew?'':`<div class="row" style="gap:8px">${estPill(e)}<span class="small muted">${esc([e.sector,TIPOS_EQ[e.tipo]].filter(Boolean).join(' · '))}</span></div>`}</div><button type="button" class="btn sm ghost" data-act="close">Cerrar</button></header>`;
-  const nav=isNew?'':`<div class="seg" id="mSeg">${secs.map(([k,v])=>`<button type="button" data-sec="${k}" aria-pressed="${M.sec===k}">${v}${k==='tareas'?` (${S.tareas.filter(t=>t.equipo===e.id).length})`:k==='docs'?` (${S.docs.filter(d=>d.equipo===e.id).length})`:''}</button>`).join('')}</div>`;
+  const nav=isNew?'':`<div class="seg" id="mSeg">${secs.map(([k,v])=>`<button type="button" data-sec="${k}" aria-pressed="${M.sec===k}">${v}${k==='tareas'?` (${S.tareas.filter(t=>t.equipo===e.id).length})`:k==='docs'?` (${S.docs.filter(d=>d.equipo===e.id).length})`:k==='constr'&&(e.construccion||[]).length?` (${e.construccion.length})`:''}</button>`).join('')}</div>`;
   let body='';
   if(isNew||M.sec==='datos')body=secDatos(e,isNew);
   else if(M.sec==='tareas')body=secTareas(e);
   else if(M.sec==='ajustes')body=secAjustes(e);
+  else if(M.sec==='constr')body=secConstr(e);
   else if(M.sec==='docs')body=secDocs(e);
   else body=secHist(e);
   const foc=document.activeElement?.id;$('dlg').innerHTML=head+nav+body;if(foc){const el=$(foc);if(el&&el.closest('#dlg'))el.focus()}}
@@ -562,6 +563,16 @@ function secAjustes(e){const M=S.modal;const aj=e.ajustes||[];const f=M.fk==='aj
       <div class="row" style="gap:8px"><button type="button" class="btn primary sm" data-act="saveajuste">Guardar</button><button type="button" class="btn sm ghost" data-act="cancelform">Cancelar</button></div></div>`:''}
     ${aj.length?`<div class="tbl-wrap"><table><tr><th>Parámetro</th><th class="n">Valor</th><th>Rango</th><th>Desde</th><th>Nota</th><th></th></tr>${aj.map((a,i)=>`<tr><td><b>${esc(a.param)}</b></td><td class="n">${esc(a.valor)} ${esc(a.unidad||'')}</td><td class="small">${esc(a.tol||'')}</td><td class="num small">${fdate(a.fecha)}</td><td class="wrap small">${esc(a.nota||'')}</td>
       <td><button type="button" class="linkbtn" data-act="editajuste" data-i="${i}">Cambiar</button>${S.confirm==='a'+i?`<button type="button" class="linkbtn del" data-act="delajuste" data-i="${i}">Sí, borrar</button>`:`<button type="button" class="linkbtn del" data-act="conf" data-id="a${i}">Borrar</button>`}</td></tr>`).join('')}</table></div>`:(f?'':'<div class="empty">Sin ajustes cargados.</div>')}`}
+function secConstr(e){const M=S.modal;const cs=e.construccion||[];const f=M.fk==='constr'?M.form:null;
+  return `<div class="row between"><span class="small muted" style="max-width:600px">Cómo está construido el equipo: álabes, ejes, camisa, materiales, medidas, rodamientos y transmisión. Sirve para fabricar o pedir repuestos.</span><button type="button" class="btn sm primary" data-act="newconstr">+ Dato</button></div>
+    ${f?`<div class="inline"><h3>${f.i!=null?'Cambiar dato':'Nuevo dato de construcción'}</h3><div class="fields">
+      <label class="f">Parte<input id="cf-parte" data-f="parte" value="${esc(f.parte||'')}" placeholder="Álabe principal"></label>
+      <label class="f span">Datos<textarea id="cf-dato" data-f="dato" placeholder="Sinfín rosca derecha, paso 250 mm, AISI 304">${esc(f.dato||'')}</textarea></label>
+      <label class="f">Desde<input type="date" id="cf-fecha" data-f="fecha" value="${esc(f.fecha||'')}"></label>
+      <label class="f span">Nota<input id="cf-nota" data-f="nota" value="${esc(f.nota||'')}" placeholder="A chequear medidas"></label></div>
+      <div class="row" style="gap:8px"><button type="button" class="btn primary sm" data-act="saveconstr">Guardar</button><button type="button" class="btn sm ghost" data-act="cancelform">Cancelar</button></div></div>`:''}
+    ${cs.length?`<div class="tbl-wrap"><table><tr><th>Parte</th><th>Datos</th><th>Desde</th><th>Nota</th><th></th></tr>${cs.map((c,i)=>`<tr><td class="wrap"><b>${esc(c.parte)}</b></td><td class="wrap">${esc(c.dato||'')}</td><td class="num small">${c.fecha?fdate(c.fecha):''}</td><td class="wrap small">${esc(c.nota||'')}</td>
+      <td><button type="button" class="linkbtn" data-act="editconstr" data-i="${i}">Cambiar</button>${S.confirm==='c'+i?`<button type="button" class="linkbtn del" data-act="delconstr" data-i="${i}">Sí, borrar</button>`:`<button type="button" class="linkbtn del" data-act="conf" data-id="c${i}">Borrar</button>`}</td></tr>`).join('')}</table></div>`:(f?'':'<div class="empty">Sin datos de construcción cargados.</div>')}`}
 function secDocs(e){const M=S.modal;const list=S.docs.filter(d=>d.equipo===e.id).sort((a,b)=>(a.titulo||'').localeCompare(b.titulo||''));
   return `<div class="row between"><span class="small muted">Manual, despiece, ficha técnica y certificados de este equipo.</span><button type="button" class="btn sm primary" data-act="newdoc" data-id="${esc(e.id)}">+ Documento</button></div>
     ${M.fk==='doc'?docFormHtml(M.form,'m'):''}
@@ -593,6 +604,9 @@ async function saveAjuste(){const M=S.modal;const f=clean(M.form);if(!f.param||!
   const ok=await guard(async()=>{await S.db.doc('equipos/'+M.id).update({ajustes:aj,editado:nowIso()});
     await S.db.doc('registros/'+uid()).set({fecha:f.fecha||today(),equipo:M.id,tipo:'ajuste',tareas:[],tareasNombres:[],detalle:`${f.param}: ${prev?`${prev.valor} ${prev.unidad||''} → `:''}${f.valor} ${f.unidad||''}${f.nota?' ('+f.nota+')':''}`.replace(/\s+/g,' ').trim(),creado:nowIso()})});
   if(ok){toast('Ajuste guardado.');M.fk=null;M.form=null;renderModal()}}
+async function saveConstr(){const M=S.modal;const f=clean(M.form);if(!f.parte||!f.dato){toast('Poné la parte y los datos.');return}
+  const cs=[...(eqById(M.id).construccion||[])];const i=f.i;delete f.i;if(!f.fecha)delete f.fecha;if(i!=null)cs[i]=f;else cs.push(f);
+  if(await guard(()=>S.db.doc('equipos/'+M.id).update({construccion:cs,editado:nowIso()}))){toast('Dato guardado.');M.fk=null;M.form=null;renderModal()}}
 async function saveDoc(ctx){const f=ctx==='tab'?S.docForm:S.modal.form;const d=clean(f);
   if(!d.titulo){toast('Poné el título del documento.');return}
   if(!f._file&&!d.asset&&!d.link){toast('Elegí un archivo o pegá un link.');return}
@@ -663,6 +677,10 @@ document.addEventListener('click',async ev=>{
     case 'newajuste':M.fk='ajuste';M.form={fecha:today()};renderModal();break;
     case 'editajuste':{const i=Number(b.dataset.i);M.fk='ajuste';M.form={...(eqById(M.id).ajustes||[])[i],fecha:today(),i};renderModal();break}
     case 'saveajuste':saveAjuste();break;
+    case 'newconstr':M.fk='constr';M.form={};renderModal();break;
+    case 'editconstr':{const i=Number(b.dataset.i);M.fk='constr';M.form={...(eqById(M.id).construccion||[])[i],i};renderModal();break}
+    case 'saveconstr':saveConstr();break;
+    case 'delconstr':{const i=Number(b.dataset.i);const cs=[...(eqById(M.id).construccion||[])];cs.splice(i,1);if(await guard(()=>S.db.doc('equipos/'+M.id).update({construccion:cs}))){S.confirm=null;renderModal()}break}
     case 'delajuste':{const i=Number(b.dataset.i);const aj=[...(eqById(M.id).ajustes||[])];aj.splice(i,1);if(await guard(()=>S.db.doc('equipos/'+M.id).update({ajustes:aj}))){S.confirm=null;renderModal()}break}
     case 'newdoc':{const f={tipo:b.dataset.tipo||'manual',fecha:today(),equipo:id||''};if(b.closest('#dlg')){M.fk='doc';M.form=f;renderModal()}else{S.docForm=f;if(f.tipo==='plano')f.titulo='Plano de la planta de lavado';setTab('docs');renderDocs()}break}
     case 'editdoc':{const d={...S.docs.find(x=>x.id===id)};if(b.closest('#dlg')){M.fk='doc';M.form=d;renderModal()}else{S.docForm=d;renderDocs();window.scrollTo({top:0,behavior:'smooth'})}break}
@@ -688,6 +706,7 @@ $('btnExport').onclick=async()=>{
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['Equipo','Tarea','Tipo','Cada','Unidad','Responsable','Último','Próximo','Estado','Cómo se hace'],
     ...items().map(i=>[eqName(i.e.id),i.t.nombre,TIPOS_T[i.t.tipo]||'',Number(i.t.cada)||null,PER[i.t.per]||'',i.t.responsable||'',D(i.ls?.fecha),D(i.due),{bad:'VENCIDO',warn:'PRÓXIMO',ok:'Al día',na:'Sin registro'}[i.st],i.t.instrucciones||''])],opt),'Plan');
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['Equipo','Parámetro','Valor','Unidad','Rango','Desde','Nota'],...S.equipos.flatMap(e=>(e.ajustes||[]).map(a=>[eqName(e.id),a.param,a.valor,a.unidad||'',a.tol||'',D(a.fecha),a.nota||'']))],opt),'Ajustes');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['Equipo','Parte','Datos','Desde','Nota'],...[...S.equipos].sort(byCode).flatMap(e=>(e.construccion||[]).map(c=>[eqName(e.id),c.parte||'',c.dato||'',D(c.fecha),c.nota||'']))],opt),'Construcción');
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['Fecha','Equipo','Tipo','Tareas','Detalle','Resultado','Quién'],...[...S.registros].sort((a,b)=>(a.fecha||'').localeCompare(b.fecha||'')).map(r=>[D(r.fecha),eqName(r.equipo),TIPOS_R[r.tipo]||'',(r.tareasNombres||[]).join(' · '),r.detalle||'',r.resultado==='ok'?'OK':r.resultado==='fuera'?'Fuera de tolerancia':'',r.quien||''])],opt),'Historial');
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['Equipo','Tipo','Título','Fecha','Archivo','Link','Notas'],...S.docs.map(d=>[eqName(d.equipo),TIPOS_D[d.tipo]||'',d.titulo||'',D(d.fecha),d.archivo||'',d.link||'',d.notas||''])],opt),'Documentos');
   const buf=XLSX.write(wb,{bookType:'xlsx',type:'array'});

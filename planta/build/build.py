@@ -19,6 +19,18 @@ snap = {
     # manuales y planos: solo el título; los archivos tienen derechos de terceros y no se publican
     'docs': [{k: v for k, v in d.items() if k not in ('asset', 'archivo')} for d in docs('docs')],
 }
+# sin nombres de personas en la página pública (notas cargadas con "dato de Rodrigo", etc.)
+import re
+def anon(v):
+    if isinstance(v, str):
+        v = re.sub(r'\bde Rodrigo\b', 'de planta', v)
+        v = re.sub(r'\bpor Rodrigo\b', 'en planta', v)
+        v = re.sub(r'(^|[.;:(] ?)Rodrigo\b', lambda m: m.group(1) + 'Planta', v)
+        return re.sub(r'\bRodrigo\b', 'planta', v)
+    if isinstance(v, list): return [anon(x) for x in v]
+    if isinstance(v, dict): return {k: anon(x) for k, x in v.items()}
+    return v
+snap = anon(snap)
 data = json.dumps(snap, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
 tpl = open(os.path.join(HERE, 'template.html')).read()
 f = FECHA[8:10] + '/' + FECHA[5:7] + '/' + FECHA[:4]
@@ -26,10 +38,13 @@ shim = ('<script>(function(){const D=' + data + ';'
         'const no=()=>Promise.reject({code:"not_granted"});const ro={set:no,update:no,delete:no};'
         'const col=c=>({onSnapshot(cb){setTimeout(()=>cb({docs:(D[c]||[]).map(x=>({id:x.id,data:()=>x}))}),0);return()=>{}},doc:()=>ro});'
         'window.claude={use:async n=>n==="db"?{collection:col,doc:()=>ro}:null};document.documentElement.classList.add("ro")})()</script>\n')
-acts = ['neweq', 'editeq', 'conf', 'newtarea', 'edittarea', 'hecho', 'newreg', 'newajuste', 'editajuste', 'newdoc', 'editdoc', 'chapa', 'pickdoc', 'pickreg', 'addfoto', 'delfoto']
+acts = ['neweq', 'editeq', 'conf', 'newtarea', 'edittarea', 'hecho', 'newreg', 'newajuste', 'editajuste', 'newconstr', 'editconstr', 'newdoc', 'editdoc', 'chapa', 'pickdoc', 'pickreg', 'addfoto', 'delfoto']
 css = '<style>' + ','.join('html.ro [data-act="%s"]' % a for a in acts) + ',html.ro #btnExport{display:none!important}</style>\n'
 banner = '<div class="status" style="margin-top:14px">Vista de solo lectura · datos al ' + f + '. Se actualiza los viernes.</div>\n  <div id="msg"'
 assert tpl.count('<div id="msg"') == 1 and tpl.count("<script>\n'use strict';") == 1
+tpl = re.sub(r"\[(?:'[^']+',?)+\]\.map\(n=>`<option value=\"\$\{n\}\">`\)", "[].map(n=>``)", tpl)
+tpl = tpl.replace('Pedile a Rodrigo', 'Pedí').replace('Avisale a Rodrigo', 'Avisá al responsable')
+assert 'De la Iglesia' not in tpl and 'Rodrigo' not in tpl
 tpl = tpl.replace('<div id="msg"', banner, 1).replace("<script>\n'use strict';", shim + "<script>\n'use strict';", 1)
 head = '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex, nofollow"><style>body{margin:0}[hidden]{display:none!important}</style></head><body>\n'
 open(os.path.join(HERE, '..', 'index.html'), 'w').write(head + css + tpl + '\n</body></html>\n')
