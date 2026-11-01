@@ -269,7 +269,9 @@ const ESTADOS_EQ={operativo:'Operativo',reserva:'Reserva',fuera:'Fuera de servic
 const TIPOS_T={preventivo:'Preventivo',lubricacion:'Lubricación',inspeccion:'Inspección',calibracion:'Calibración'};
 const TIPOS_R={preventivo:'Preventivo',lubricacion:'Lubricación',inspeccion:'Inspección',calibracion:'Calibración',ajuste:'Ajuste',reparacion:'Reparación',cambio:'Cambio de repuesto'};
 const PER={dias:'días',semanas:'semanas',meses:'meses'};
-const TIPOS_D={manual:'Manual',plano:'Plano',ficha:'Ficha técnica',certificado:'Certificado de calibración',despiece:'Despiece / repuestos',otro:'Otro'};
+const TIPOS_D={manual:'Manual',plano:'Plano',ficha:'Ficha técnica',certificado:'Certificado de calibración',despiece:'Despiece / repuestos',guia:'Guía de preventivos',otro:'Otro'};
+const guias=id=>S.docs.filter(d=>d.tipo==='guia'&&(d.equipo===id||(d.equipos||[]).includes(id))&&(d.asset||d.link));
+const guiaBtns=(id,cls)=>guias(id).map(d=>docLink(d,guias(id).length>1?d.titulo:'Guía de preventivos',cls||'btn sm primary')).join(' ');
 const S={db:null,assets:null,sample:null,downloads:null,equipos:[],tareas:[],registros:[],docs:[],loaded:{e:false,t:false,r:false,d:false},
   tab:'panel',pk:'todas',sector:'',tipo:'',q:'',hEq:'',hTipo:'',modal:null,docForm:null,confirm:null};
 const $=id=>document.getElementById(id);
@@ -345,7 +347,7 @@ function renderPanel(){
     return `<div class="eqcard"><i class="bg-${st}"></i><div class="in">
       <div class="row between" style="gap:8px"><b>${e.codigo?`<span class="code">${esc(e.codigo)}</span> `:''}${esc(e.nombre)}</b><span class="small muted">${esc(e.sector||'')}</span></div>
       <ul>${list.map(i=>`<li>${stPill(i.st)}<span>${esc(i.t.nombre)}</span><span class="small muted">${esc(remTxt(i))}</span><button type="button" class="linkbtn go" data-act="hecho" data-id="${esc(i.t.id)}">Registrar hecho</button></li>`).join('')}</ul>
-      <div class="row" style="gap:8px"><button type="button" class="btn sm" data-act="openeq" data-id="${esc(e.id)}">Ver equipo</button></div></div></div>`}).join('')}</div>`
+      <div class="row" style="gap:8px"><button type="button" class="btn sm" data-act="openeq" data-id="${esc(e.id)}">Ver equipo</button>${guiaBtns(e.id,'btn sm ghost')}</div></div></div>`}).join('')}</div>`
     :S.equipos.length?`<div class="empty"><b>Todo al día</b>${na.length?`Hay ${na.length} tarea${na.length>1?'s':''} sin primer registro: cuando se hagan, registralas para que empiece a contar el vencimiento.`:'Ningún preventivo vencido ni próximo.'}</div>`
     :'<div class="empty"><b>Todavía no hay equipos</b>Se cargan desde el plano de la planta y las fotos de las chapas. También podés agregar uno con "+ Equipo".</div>';
   const plano=S.docs.filter(d=>d.tipo==='plano').sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''))[0];
@@ -371,7 +373,7 @@ function renderPlan(){
   for(const b of $('pSeg').children)b.setAttribute('aria-pressed',b.dataset.k===S.pk);
   const all=items().filter(i=>S.pk==='todas'||i.t.tipo===S.pk);
   $('planTbl').innerHTML=all.length?`<tr><th></th><th>Equipo</th><th>Tarea</th><th>Tipo</th><th>Frecuencia</th><th>Último</th><th>Próximo</th><th>Estado</th><th>Responsable</th><th></th></tr>`+all.map(i=>`<tr><td class="sev s-${i.st}"><i></i></td>
-    <td><button type="button" class="linkbtn go" data-act="openeq" data-id="${esc(i.e.id)}">${esc(eqName(i.e.id))}</button></td><td class="wrap">${esc(i.t.nombre)}</td><td class="small">${esc(TIPOS_T[i.t.tipo]||'')}</td><td class="small">${esc(cadaTxt(i.t))}</td>
+    <td><button type="button" class="linkbtn go" data-act="openeq" data-id="${esc(i.e.id)}">${esc(eqName(i.e.id))}</button></td><td class="wrap">${esc(i.t.nombre)}${guias(i.e.id).length?' '+guiaBtns(i.e.id,'linkbtn go small'):''}</td><td class="small">${esc(TIPOS_T[i.t.tipo]||'')}</td><td class="small">${esc(cadaTxt(i.t))}</td>
     <td class="num small">${i.ls?fdate(i.ls.fecha):'—'}</td><td class="num small">${i.due?fdate(i.due):'—'}</td><td>${stPill(i.st)}</td><td class="small">${esc(i.t.responsable||'')}</td>
     <td><button type="button" class="btn sm" data-act="hecho" data-id="${esc(i.t.id)}">Registrar hecho</button></td></tr>`).join('')
     :`<tr><td class="empty"><b>Sin tareas${S.pk!=='todas'?' de este tipo':''}</b>Las tareas se agregan desde la ficha de cada equipo, en la sección Preventivos.</td></tr>`}
@@ -504,7 +506,7 @@ function renderModal(){
   if(!isNew&&!e){closeModal();return}
   if(isNew&&!M.form)M.form={estado:'operativo'};
   const secs=[['datos','Datos'],['constr','Construcción'],['tareas','Preventivos'],['ajustes','Ajustes'],['docs','Manuales'],['hist','Historial']];
-  const head=`<header><div style="display:flex;flex-direction:column;gap:4px;min-width:0"><h2 id="dlgTitle">${isNew?'Nuevo equipo':`${e.codigo?`<span class="code">${esc(e.codigo)}</span> `:''}${esc(e.nombre)}`}</h2>${isNew?'':`<div class="row" style="gap:8px">${estPill(e)}<span class="small muted">${esc([e.sector,TIPOS_EQ[e.tipo]].filter(Boolean).join(' · '))}</span></div>`}</div><button type="button" class="btn sm ghost" data-act="close">Cerrar</button></header>`;
+  const head=`<header><div style="display:flex;flex-direction:column;gap:4px;min-width:0"><h2 id="dlgTitle">${isNew?'Nuevo equipo':`${e.codigo?`<span class="code">${esc(e.codigo)}</span> `:''}${esc(e.nombre)}`}</h2>${isNew?'':`<div class="row" style="gap:8px">${estPill(e)}<span class="small muted">${esc([e.sector,TIPOS_EQ[e.tipo]].filter(Boolean).join(' · '))}</span>${guias(e.id).length?guiaBtns(e.id):''}</div>`}</div><button type="button" class="btn sm ghost" data-act="close">Cerrar</button></header>`;
   const nav=isNew?'':`<div class="seg" id="mSeg">${secs.map(([k,v])=>`<button type="button" data-sec="${k}" aria-pressed="${M.sec===k}">${v}${k==='tareas'?` (${S.tareas.filter(t=>t.equipo===e.id).length})`:k==='docs'?` (${S.docs.filter(d=>d.equipo===e.id).length})`:k==='constr'&&(e.construccion||[]).length?` (${e.construccion.length})`:''}</button>`).join('')}</div>`;
   let body='';
   if(isNew||M.sec==='datos')body=secDatos(e,isNew);
@@ -548,7 +550,7 @@ function regForm(f,e){const ts=S.tareas.filter(t=>t.equipo===e.id);const cal=(f.
 function secTareas(e){const M=S.modal;
   const its=S.tareas.filter(t=>t.equipo===e.id).map(item).sort((a,b)=>sevRank[a.st]-sevRank[b.st]||(a.due||'9').localeCompare(b.due||'9'));
   const form=M.fk==='tarea'?tareaForm(M.form):M.fk==='reg'?regForm(M.form,e):'';
-  return `<div class="row between"><span class="small muted">Preventivos, lubricación, inspecciones y calibraciones con su frecuencia.</span><div class="row" style="gap:8px"><button type="button" class="btn sm" data-act="newreg">Registrar trabajo</button><button type="button" class="btn sm primary" data-act="newtarea">+ Tarea</button></div></div>${form}
+  return `<div class="row between"><span class="small muted">Preventivos, lubricación, inspecciones y calibraciones con su frecuencia.${guias(e.id).length?' Cómo hacer cada uno, paso a paso: '+guiaBtns(e.id,'linkbtn go'):''}</span><div class="row" style="gap:8px"><button type="button" class="btn sm" data-act="newreg">Registrar trabajo</button><button type="button" class="btn sm primary" data-act="newtarea">+ Tarea</button></div></div>${form}
     ${its.length?`<div class="tbl-wrap"><table><tr><th></th><th>Tarea</th><th>Tipo</th><th>Frecuencia</th><th>Último</th><th>Estado</th><th></th></tr>${its.map(i=>`<tr><td class="sev s-${i.st}"><i></i></td><td class="wrap"><b>${esc(i.t.nombre)}</b>${i.t.instrucciones?`<div class="small muted">${esc(i.t.instrucciones)}</div>`:''}${i.t.responsable?`<div class="small muted">Responsable: ${esc(i.t.responsable)}</div>`:''}</td><td class="small">${esc(TIPOS_T[i.t.tipo]||'')}</td><td class="small">${esc(cadaTxt(i.t))}</td><td class="num small">${i.ls?fdate(i.ls.fecha):'—'}</td><td>${stPill(i.st)}<div class="small muted">${esc(remTxt(i))}</div></td>
       <td><button type="button" class="btn sm" data-act="hecho" data-id="${esc(i.t.id)}">Hecho</button> <button type="button" class="linkbtn" data-act="edittarea" data-id="${esc(i.t.id)}">Editar</button></td></tr>`).join('')}</table></div>`:(form?'':'<div class="empty"><b>Sin plan de mantenimiento</b>Agregá las tareas del manual del fabricante con "+ Tarea".</div>')}`}
 function secAjustes(e){const M=S.modal;const aj=e.ajustes||[];const f=M.fk==='ajuste'?M.form:null;

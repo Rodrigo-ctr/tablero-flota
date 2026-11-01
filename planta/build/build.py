@@ -16,8 +16,8 @@ snap = {
     'tareas': docs('tareas'),
     # sin nombres de personas ni adjuntos en la página pública
     'registros': [{k: v for k, v in r.items() if k not in ('quien', 'adjunto')} for r in docs('registros')],
-    # manuales y planos: solo el título; los archivos tienen derechos de terceros y no se publican
-    'docs': [{k: v for k, v in d.items() if k not in ('asset', 'archivo')} for d in docs('docs')],
+    # manuales y planos: solo el título; archivos y enlaces (Drive, guías) tienen derechos de terceros y no se publican
+    'docs': [{k: v for k, v in d.items() if k not in ('asset', 'archivo', 'link')} for d in docs('docs')],
 }
 # sin nombres de personas en la página pública (notas cargadas con "dato de Rodrigo", etc.)
 import re
