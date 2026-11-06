@@ -45,6 +45,11 @@ assert tpl.count('<div id="msg"') == 1 and tpl.count("<script>\n'use strict';") 
 tpl = re.sub(r"\[(?:'[^']+',?)+\]\.map\(n=>`<option value=\"\$\{n\}\">`\)", "[].map(n=>``)", tpl)
 tpl = tpl.replace('Pedile a Rodrigo', 'Pedí').replace('Avisale a Rodrigo', 'Avisá al responsable')
 assert 'De la Iglesia' not in tpl and 'Rodrigo' not in tpl
+# foto de la salina debajo de la cinta, solo en la vista pública (OK de Rodrigo 06/11)
+banda = open(os.path.join(HERE, 'banda-salina.html')).read().strip()
+assert tpl.count('</div></header>\n<div class="wrap">') == 1
+tpl = tpl.replace('</div></header>\n<div class="wrap">', '</div></header>\n<div class="slb-banda" role="img" aria-label="Cosechadoras sobre la salina"></div>\n<div class="wrap">', 1)
+tpl = tpl.replace('<style>\n/* Layout:', banda + '\n<style>\n/* Layout:', 1)
 tpl = tpl.replace('<div id="msg"', banner, 1).replace("<script>\n'use strict';", shim + "<script>\n'use strict';", 1)
 head = '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex, nofollow"><style>body{margin:0}[hidden]{display:none!important}</style></head><body>\n'
 open(os.path.join(HERE, '..', 'index.html'), 'w').write(head + css + tpl + '\n</body></html>\n')
