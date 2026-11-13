@@ -1,0 +1,279 @@
+<style>
+/* Layout: cinta SLB, aviso de estado, pestañas (Día / Paradas / Indicadores / Cómo se cruza), hoja del día en bloques por registro. */
+:root{
+  --bg:#F4F6F6; --surface:#FFFFFF; --fg:#1E2326; --muted:#5D676C; --line:#D9DFE1;
+  --accent:#2B6D84; --accent-ink:#FFFFFF; --accent-soft:#E3EEF1;
+  --ok:#2F7A4A; --ok-soft:#E2F1E7; --warn:#A86A00; --warn-soft:#FBEFD6; --bad:#B23A3A; --bad-soft:#F8E1E1;
+  --cM:#5a5f8a; --cC:#8a4f5d; --cP:#7a6a3a; --cO:#4b6b4a;
+  --f-disp:"Barlow Condensed","Arial Narrow",Arial,sans-serif; --f-body:"Barlow",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141917; --surface:#1C2224; --fg:#E7ECEE; --muted:#9AA5AA; --line:#2E373A;
+  --accent:#6FB3C9; --accent-ink:#141917; --accent-soft:#1D3540;
+  --ok:#6CC08A; --ok-soft:#1B3325; --warn:#E5A82A; --warn-soft:#3A2D12; --bad:#E77B7B; --bad-soft:#3D1F1F;
+  --cM:#a3a8d8; --cC:#d39aa8; --cP:#c9b27a; --cO:#8fbf8d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141917; --surface:#1C2224; --fg:#E7ECEE; --muted:#9AA5AA; --line:#2E373A;
+  --accent:#6FB3C9; --accent-ink:#141917; --accent-soft:#1D3540;
+  --ok:#6CC08A; --ok-soft:#1B3325; --warn:#E5A82A; --warn-soft:#3A2D12; --bad:#E77B7B; --bad-soft:#3D1F1F;
+  --cM:#a3a8d8; --cC:#d39aa8; --cP:#c9b27a; --cO:#8fbf8d; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.45}
+.wrap{max-width:1180px;margin:0 auto;padding-block:16px 8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+.aviso{background:var(--warn-soft);color:var(--fg);border:1px solid var(--warn);border-radius:6px;padding:10px 14px;font-size:14px}
+.aviso b{color:var(--warn)}
+.aviso.ok{background:var(--surface);border-color:var(--line)}.aviso.ok b{color:var(--fg)}
+.btn-pdf{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:14px;padding:6px 12px;border-radius:4px;background:var(--accent);color:var(--accent-ink);text-decoration:none}
+.btn-pdf:hover{filter:brightness(1.1)}.btn-pdf:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+input[type=search]{font:inherit;padding:6px 10px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--fg);min-width:0;width:min(260px,100%)}
+input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn-sec{display:inline-flex;align-items:center;font-weight:600;font-size:14px;padding:6px 12px;border-radius:4px;border:1px solid var(--accent);color:var(--accent);text-decoration:none;background:var(--surface)}
+.docs{display:flex;flex-wrap:wrap;gap:10px;padding:12px 14px}
+.ficha{background:var(--accent-soft);border:1px solid var(--accent);border-radius:6px;padding:12px 14px;margin-bottom:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px 16px}
+.ficha .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}.ficha .v{font-weight:600}
+.ficha h3{grid-column:1/-1;margin:0;font:700 19px var(--f-disp)}
+tr.marca td{background:var(--accent-soft)}
+.paso{font:600 12px var(--f-disp);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.alertas{display:flex;flex-wrap:wrap;gap:6px}
+nav.tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+nav.tabs button{font:600 16px var(--f-disp);letter-spacing:.03em;background:none;border:0;border-bottom:3px solid transparent;color:var(--muted);padding:8px 12px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{color:var(--fg);border-color:var(--accent)}
+nav.tabs button:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.barra{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.barra label{font-size:13px;color:var(--muted)}
+select{font:inherit;padding:6px 8px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--fg)}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}.chip.warn{background:var(--warn-soft);color:var(--warn)}.chip.bad{background:var(--bad-soft);color:var(--bad)}.chip.neu{background:var(--accent-soft);color:var(--accent)}
+.resumen{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.dato{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:10px 12px}
+.dato .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.dato .v{font:700 26px var(--f-disp);font-variant-numeric:tabular-nums}
+.dato .s{font-size:12px;color:var(--muted)}
+.dato .hs{display:grid;grid-template-columns:1fr auto;gap:2px 10px;margin-top:4px;font-size:13px;color:var(--fg)}
+.dato .hs b{font:700 16px var(--f-disp);font-variant-numeric:tabular-nums;text-align:right}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}
+section.reg{background:var(--surface);border:1px solid var(--line);border-radius:6px;min-width:0}
+section.reg>header{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid var(--line)}
+section.reg h2{font:700 19px var(--f-disp);margin:0;letter-spacing:.01em}
+section.reg h3{font:600 14px var(--f-disp);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:12px 14px 4px}
+.cod{font-size:12px;color:var(--muted)}
+.tbl{overflow-x:auto;padding:0 6px 10px}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+th{font-weight:600;font-size:12px;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.n,th.n{text-align:right}
+.vacio{color:var(--muted);font-size:14px;padding:6px 14px 12px}
+.check{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:4px 14px;padding:4px 14px 12px;font-size:14px}
+.check span::before{content:"✓ ";color:var(--ok);font-weight:700}
+.check span.no::before{content:"✗ ";color:var(--bad)}
+.causa{display:inline-block;width:22px;text-align:center;font-weight:700;border-radius:3px;color:var(--surface)}
+.cM{background:var(--cM)}.cC{background:var(--cC)}.cP{background:var(--cP)}.cO{background:var(--cO)}
+.barras{display:flex;flex-direction:column;gap:8px;padding:12px 14px}
+.fila{display:grid;grid-template-columns:130px 1fr 70px;gap:10px;align-items:center;font-size:14px}
+.pista{height:14px;background:var(--accent-soft);border-radius:3px;overflow:hidden}
+.pista i{display:block;height:100%}
+.nota{font-size:13px;color:var(--muted);padding:0 14px 12px}
+.anal{background:var(--accent-soft);border-left:3px solid var(--accent);border-radius:4px;padding:8px 12px;margin:0 0 12px;font-size:14px}
+.anal b{font:600 13px var(--f-disp);text-transform:uppercase;letter-spacing:.06em}
+.anal p{margin:4px 0 0}
+.anal p span{color:var(--muted);font-size:12px}
+textarea{font:inherit;width:100%;min-height:70px;padding:8px 10px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--fg);resize:vertical}
+textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.btn-pdf{border:0;cursor:pointer;font-family:inherit}button.btn-pdf:disabled{opacity:.5;cursor:default}
+button.lnk{background:none;border:0;padding:0;font:inherit;font-size:12px;color:var(--muted);text-decoration:underline;cursor:pointer}
+.bit-form{display:grid;gap:10px;padding:12px 14px}
+.nt{padding:10px 14px;border-bottom:1px solid var(--line);font-size:14px}.nt:last-child{border-bottom:0}
+.nt p{margin:4px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.nt .pie{font-size:12px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.anal .nt{padding:6px 0;border-color:var(--line)}
+.anal details{margin-top:6px}.anal summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--accent)}
+.glos{margin:0;padding:2px 14px 14px;max-width:820px}
+.glos dt{font:600 16px var(--f-disp);margin-top:14px}
+.glos dd{margin:3px 0 0;font-size:14px;line-height:1.5}
+.glos dd.ej{color:var(--muted);font-size:13px}
+.cruce{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);font-size:14px}
+.cruce:last-child{border-bottom:0}
+.cruce .lado{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:8px 10px;min-width:0}
+.cruce .lado b{display:block;font:600 15px var(--f-disp)}
+.cruce .clave{font-size:12px;font-weight:600;color:var(--accent);text-align:center}
+@media (max-width:600px){.cruce{grid-template-columns:1fr}.cruce .clave{text-align:left}.fila{grid-template-columns:100px 1fr 56px}.grid2{grid-template-columns:1fr}}
+</style>
+
+<header class="slb-cinta slb-prod"><div class="slb-cinta-in">
+  <span class="slb-logo slb-logo-lb" role="img" aria-label="Las Barrancas"></span>
+  <span class="slb-sep"></span>
+  <div class="slb-tit"><span class="slb-area">Producción · Calidad</span><h1>Registros de lavado</h1></div>
+  <div class="slb-meta">Yacimiento Salina Las Barrancas</div>
+</div></header>
+
+<div class="wrap">
+  <div class="aviso" id="aviso"><b>Cargando…</b> Buscando los días cargados.</div>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" id="t-dia" aria-selected="true" data-v="dia">Día</button>
+    <button role="tab" id="t-par" aria-selected="false" data-v="par">Paradas</button>
+    <button role="tab" id="t-ind" aria-selected="false" data-v="ind">Indicadores</button>
+    <button role="tab" id="t-tra" aria-selected="false" data-v="tra">Trazabilidad</button>
+    <button role="tab" id="t-bit" aria-selected="false" data-v="bit">Bitácora</button>
+    <button role="tab" id="t-cru" aria-selected="false" data-v="cru">Cómo se cruza</button>
+    <button role="tab" id="t-lee" aria-selected="false" data-v="lee">Cómo se lee</button>
+  </nav>
+
+  <div id="v-dia">
+    <div class="barra" style="margin-bottom:12px">
+      <label for="selDia">Día de operación</label><select id="selDia"></select>
+      <span id="estadoDia"></span>
+    </div>
+    <div class="alertas" id="alertas" style="margin-bottom:12px"></div>
+    <div id="analisis"></div>
+    <div class="resumen" id="resDia" style="margin-bottom:16px"></div>
+    <div class="grid2">
+      <section class="reg" id="rProd"></section>
+      <section class="reg" id="rParadas"></section>
+      <section class="reg" id="rCtrl"></section>
+      <section class="reg" id="rSed"></section>
+    </div>
+    <section class="reg" id="rBat" style="margin-top:16px"></section>
+  </div>
+
+  <div id="v-par" hidden>
+    <section class="reg"><header><h2>Paradas de planta</h2><span class="cod">Sale del R-P-XX Producción de lavado, hoja 2</span></header>
+      <div class="tbl"><table id="tParadas"></table></div>
+      <p class="nota">Causa: M Mantenimiento · C Calidad · P Producción · O Operativa. La columna Equipo manda la parada a la ficha del equipo en EQUIPOS · Planta de lavado.</p>
+    </section>
+  </div>
+
+  <div id="v-ind" hidden>
+    <div class="barra" style="margin-bottom:12px">
+      <label for="indTipo">Ver por</label>
+      <select id="indTipo"><option value="dia">Día</option><option value="mes" selected>Mes</option><option value="sem">Semana</option><option value="todo">Todo lo cargado</option></select>
+      <label for="indPer">Período</label><select id="indPer"></select>
+      <span class="cod" id="indDias"></span>
+    </div>
+    <div id="indNotas"></div>
+    <div class="resumen" id="resInd" style="margin-bottom:16px"></div>
+    <div class="grid2">
+      <section class="reg"><header><h2>Minutos parados por causa</h2><span class="cod" id="perCausa"></span></header><div class="barras" id="bCausa"></div></section>
+      <section class="reg"><header><h2>Ritmo de lavado (Tn/h)</h2><span class="cod">por día</span></header><div class="barras" id="bTh"></div>
+        <p class="nota">Tn/h = Tn de radar ÷ tiempo de llenado de los silos, sin las paradas. La puesta en marcha (regular niveles de salmuera hasta que entra sal al primer silo) no cuenta.</p></section>
+    </div>
+    <section class="reg" style="margin-top:16px"><header><h2>Producción perdida por día</h2><span class="cod">contra 33 Tn/h a silo</span></header><div class="tbl"><table id="tPerd"></table></div>
+      <p class="nota">Ritmo normal: un silo de 34 Tn se llena en unos 62 min, o sea 33 Tn/h a silo. Las 36,5 t/h son teóricas; la alimentación real se estima abajo, con el vaciado de las tolvas. "Llenados lentos" suma los minutos de más de cada llenado que tarda 5 min o más sobre lo normal, y dice cuál fue. Si ese día hubo corte de luz o falla de sistema se atribuye a eso; si no, queda a revisar (hopper sin sal, vibrador de una tolva, carga desde el mismo silo).</p></section>
+    <section class="reg" style="margin-top:16px"><header><h2>Vaciado de tolvas de granel</h2><span class="cod">minutos por vaciado, período elegido</span></header><div class="tbl"><table id="tTg"></table></div>
+      <p class="nota">Cuenta como vaciado completo el que dura 40 min o más; los más cortos son cambios de tolva o restos del día anterior. Una tolva que tarda más que las otras puede tener más carga o el vibrador flojo. "Alimentación estimada" = 34 t por descarga, el mismo valor que usa Parvas y despachos para los camiones sin pesar; se mantiene fijo para poder comparar con los meses anteriores hasta tener un mes entero de pesadas ÷ tiempo promedio de vaciado. Las 36,5 t/h son teóricas; cada tonelada de más o de menos por camión mueve la estimación 1 t/h.</p></section>
+  <section class="reg" style="margin-top:16px"><header><h2 id="cmpTit">Comparativa</h2><span class="cod">la fila resaltada es el período elegido</span></header><div class="tbl"><table id="tCmp"></table></div>
+      <p class="nota">Semana de lunes a domingo. Disponibilidad = horas de marcha ÷ horas de lavado. Ritmo = Tn de radar ÷ tiempo de llenado de silos, contra 33 Tn/h a silo. Llenados lentos = minutos de más sobre el ritmo normal en días sin corte ni falla.</p></section>
+  </div>
+
+  <div id="v-tra" hidden>
+    <div class="barra" style="margin-bottom:12px">
+      <label for="trBus">Buscar remito, patente o fecha</label>
+      <input id="trBus" type="search" placeholder="Ej.: 37152, AG 204 DY o 06/11" autocomplete="off">
+      <label for="trDia">o elegir día</label><select id="trDia"></select>
+    </div>
+    <div id="trFicha"></div>
+    <div id="trCuerpo" style="display:flex;flex-direction:column;gap:16px"></div>
+  </div>
+
+  <div id="v-bit" hidden>
+    <section class="reg"><header><h2>Nueva nota</h2><span class="cod">queda guardada para la próxima vez</span></header>
+      <div class="bit-form">
+        <div class="barra">
+          <label for="bitTipo">Sobre</label>
+          <select id="bitTipo"><option value="dia">Un día</option><option value="sem">Una semana</option><option value="gen">General</option></select>
+          <label for="bitRef">Cuál</label><select id="bitRef"></select>
+        </div>
+        <label for="bitTxt" class="nota" style="padding:0">Qué vimos, a qué se debió, qué hay que hacer o recordar</label>
+        <textarea id="bitTxt" maxlength="2000"></textarea>
+        <div class="barra"><button class="btn-pdf" id="bitGuardar" type="button">Guardar nota</button><span class="nota" id="bitEstado" style="padding:0" role="status">Cargando notas…</span></div>
+      </div>
+    </section>
+    <section class="reg" style="margin-top:16px"><header><h2>Notas guardadas</h2><span class="cod" id="bitCuenta"></span></header>
+      <div class="barra" style="padding:10px 14px 0"><label for="bitFiltro">Mostrar</label><select id="bitFiltro"><option value="">Todas</option><option value="dia">Por día</option><option value="sem">Por semana</option><option value="gen">Generales</option></select></div>
+      <div id="bitLista"></div>
+    </section>
+  </div>
+
+  <div id="v-cru" hidden>
+    <section class="reg"><header><h2>Qué se cruza con qué</h2><span class="cod">la clave de cada cruce es la fecha más el dato del medio</span></header>
+      <div id="cruces"></div>
+    </section>
+  </div>
+  <div id="v-lee" hidden>
+    <section class="reg"><header><h2>De dónde salen los datos</h2><span class="cod">planillas en papel, escaneadas</span></header>
+      <dl class="glos">
+        <dt>Las cuatro planillas del día</dt>
+        <dd>El operador de lavado completa a mano Producción de lavado, Control de lavado de sal, Control de sedimentador y Control de carga de bateas. Se escanean en un PDF por día y de ahí se carga cada número. En la pestaña Día, el botón “Ver planilla escaneada” abre ese PDF.</dd>
+        <dt>La planilla de la balanza</dt>
+        <dd>Los remitos y el peso de cada batea salen de la planilla de despachos que se hace en la balanza de camiones, y las descargas de granel del registro de descarga en tolva. El operador de lavado no anota remitos.</dd>
+        <dt>Valores con “~”</dt>
+        <dd>Son estimados, calculados a partir de lo anotado. No son mediciones.</dd>
+      </dl>
+    </section>
+    <section class="reg" style="margin-top:16px"><header><h2>Producción</h2><span class="cod">pestañas Día e Indicadores</span></header>
+      <dl class="glos">
+        <dt>Sal a silos (radar)</dt>
+        <dd>Suma de las toneladas que indica el SCADA, por el sensor radar, en cada llenado de silo.</dd>
+        <dd class="ej">Ejemplo 12/11: 7 llenados, 238,1 Tn.</dd>
+        <dt>Puesta en marcha</dt>
+        <dd>Minutos desde la hora de inicio del lavado hasta que entra sal al primer silo. Es el tiempo de regular niveles de salmuera y arrancar la primera tolva. Se muestra aparte y no se cuenta como pérdida.</dd>
+        <dd class="ej">Ejemplo 12/11: inicio 06:10, primer silo 06:40, 30 min.</dd>
+        <dt>Ritmo de lavado</dt>
+        <dd>Toneladas de radar divididas por el tiempo que llevó llenar los silos, descontando las paradas. Se compara con 33 Tn/h, que es lo normal de la planta: un silo de 34 Tn se llena en unos 62 minutos. Las 36,5 t/h son teóricas.</dd>
+        <dd class="ej">Ejemplo 12/11: 238,1 Tn en 7,2 h de llenado, 33,1 Tn/h, 100 %.</dd>
+        <dt>Llenados lentos</dt>
+        <dd>Minutos de más de cada llenado que tardó 5 minutos o más sobre lo normal. Dice qué silo fue y a qué hora, para poder buscar la causa: hopper sin sal, vibrador de una tolva, carga desde el mismo silo. Si ese día hubo corte de luz o falla de sistema, se atribuye a eso.</dd>
+        <dd class="ej">Ejemplo 06/11: el silo 1 tardó 94 min en lugar de 62, 32 min de más.</dd>
+        <dt>Paradas y disponibilidad</dt>
+        <dd>Las paradas son las que anota el operador, con su causa: M mantenimiento, C calidad, P producción, O operativa. Disponibilidad es el tiempo en marcha dividido por el tiempo total de lavado.</dd>
+        <dt>Vaciado de tolvas y alimentación estimada</dt>
+        <dd>Minutos que tarda en vaciarse cada tolva de granel (TG1, TG2, TG3). Como cada vaciado es un camión de granel, la alimentación real al lavado se estima con 34 t por camión dividido por el tiempo promedio de vaciado. Es provisoria hasta poder pesar los camiones.</dd>
+        <dd class="ej">Ejemplo noviembre: 59,3 min por tolva, unas 34,4 t/h.</dd>
+      </dl>
+    </section>
+    <section class="reg" style="margin-top:16px"><header><h2>Controles</h2><span class="cod">calidad del registro</span></header>
+      <dl class="glos">
+        <dt>Controles PCA</dt>
+        <dd>Controles de sedimentador hechos contra los esperados: uno al inicio y uno cada 2 horas. “En rango” es entre 100 y 110 ml cada 15 segundos.</dd>
+        <dt>Casilleros sin marcar y verificación previa</dt>
+        <dd>Son los puntos del control de lavado que el operador no tildó antes de arrancar. No quiere decir que estuvieran mal, sino que no quedó registrado.</dd>
+        <dt>Desvíos</dt>
+        <dd>Lo que el operador anota en “Desvíos y trazabilidad” del control de lavado, más los controles de PCA fuera de rango.</dd>
+        <dt>Días sin firma</dt>
+        <dd>Días en que nadie firmó “Revisó (Encargado de Producción)”.</dd>
+      </dl>
+    </section>
+    <section class="reg" style="margin-top:16px"><header><h2>Bateas y trazabilidad</h2><span class="cod">pestañas Día y Trazabilidad</span></header>
+      <dl class="glos">
+        <dt>Tn teóricas (radar SCADA)</dt>
+        <dd>Lo que marcó el radar en el llenado del silo del que se cargó la batea. Se toma del cuadro Producción de lavado; el operador no lo vuelve a anotar.</dd>
+        <dt>Cuándo se llenó ese silo</dt>
+        <dd>El horario del último llenado de ese silo terminado antes de cargar la batea. Dice “ese día” o la fecha, si el silo venía lleno de un día anterior. Sirve para saber en qué horario se lavó la sal que se llevó cada batea.</dd>
+        <dd class="ej">Ejemplo 12/11: batea de las 09:56 del silo 4, llenado ese día de 06:40 a 07:43, 34,0 Tn.</dd>
+        <dt>Remito y peso balanza</dt>
+        <dd>El remito y el neto que se hicieron en la balanza de camiones. La herramienta los empareja con cada batea por chofer y orden de carga.</dd>
+        <dt>Dif. (Tn)</dt>
+        <dd>Peso de balanza menos Tn teóricas de radar. Muestra cuánto se aparta el radar del peso real.</dd>
+        <dt>Bateas con patente</dt>
+        <dd>Porcentaje de bateas en las que el operador anotó la patente del camión.</dd>
+        <dt>Sábados</dt>
+        <dd>No hay lavado. Se cargan las bateas con la sal que quedó del viernes y se llenan tolvas para arrancar el lunes. Esos días no cuentan para ritmo, controles ni firma.</dd>
+        <dt>Lote de cosecha</dt>
+        <dd>En Trazabilidad, a cada parva se le asigna el lote de cosecha vigente, siguiendo el orden de cosecha.</dd>
+      </dl>
+    </section>
+    <section class="reg" style="margin-top:16px"><header><h2>Para tener en cuenta</h2></header>
+      <dl class="glos">
+        <dt>Los números dependen de lo anotado</dt>
+        <dd>Si una hora está mal escrita en la planilla, el indicador sale corrido. Por ejemplo, el 03/11 el primer llenado figura con 34 Tn en 34 minutos y eso sube el ritmo de ese día. Las notas de cada día avisan estos casos.</dd>
+        <dt>Bitácora y análisis del día</dt>
+        <dd>Son notas que dejamos al analizar un día o una semana: a qué se debió un llenado lento, qué se decidió, qué hay que revisar. Se escriben en la pestaña Bitácora o desde el propio día, y quedan guardadas.</dd>
+        <dt>Es una maqueta</dt>
+        <dd>Los datos son reales, pero todavía se cargan a mano en cada versión. Sirve para ajustar el formato antes de pasarla a herramienta definitiva.</dd>
+      </dl>
+    </section>
+  </div>
+</div>
+
+<footer class="slb-pie"><span class="slb-logo slb-logo-hd" role="img" aria-label="Haidar y Cía."></span><span>Yacimiento Salina Las Barrancas</span></footer>
+
