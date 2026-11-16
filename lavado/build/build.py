@@ -3,7 +3,7 @@ Uso: python3 lavado/build/build.py <carpeta_dias>
 <carpeta_dias> = colección "dias" exportada del artefacto con ArtifactData (list, out_dir): un JSON por día.
 Sin argumento usa la SEMILLA embebida en script2.part.
 html.part y script2.part son copia de la herramienta (calidad/registros-build/ del proyecto): si cambia, se vuelven a copiar.
-Se quitan: Bitácora, Trazabilidad, "Cómo se cruza", notas de carga, operadores, choferes, transportistas
+Igual que la herramienta (con Trazabilidad y "Cómo se cruza", pedido de Rodrigo 16/11). Se quitan: Bitácora, notas de carga, operadores, choferes, transportistas
 (pasan a "Chofer 1", "Transporte A"), patentes (enmascaradas) y enlaces a Drive."""
 import json, glob, os, re, sys, unicodedata
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -44,15 +44,14 @@ data = json.dumps(D, ensure_ascii=False).replace('</', '<\\/')
 js = js[:m.start()] + '\nconst SEMILLA=' + data + ';\n' + js[m.end():]
 assert js.count('const PUBLICA=false;') == 1
 js = js.replace('const PUBLICA=false;', 'const PUBLICA=true;')
+js = js.replace('https://drive.google.com/file/d/', '#')  # consultas: internas, no se muestran sin base
 js = re.sub(r'(?<=[;{}]) *//[^\n]*', '', js)
 js = re.sub(r'\n *//[^\n]*', '', js)
 html = re.sub(r'<!--.*?-->', '', html, flags=re.S)
-js = re.sub(r'const CRUCES=\[.*?\n\];', 'const CRUCES=[];', js, count=1, flags=re.S)
-for v in ['tra', 'bit', 'cru']:
+for v in ['bit']:
     html, n = re.subn(r'\n *<button role="tab" id="t-%s"[^\n]*' % v, '', html); assert n == 1, v
     html, n = re.subn(r'\n  <div id="v-%s" hidden>.*?\n  </div>' % v, '', html, flags=re.S); assert n == 1, v
 html, n = re.subn(r'\n *<dt>Bitácora y análisis del día</dt>\s*<dd>.*?</dd>', '', html, flags=re.S); assert n == 1
-html = html.replace('Cómo se cruza', '')
 banda = rd('banda-salina.html').strip()
 CINTA = '</div></header>'
 assert html.count(CINTA) == 1
