@@ -164,7 +164,7 @@ input.f[aria-invalid=true]{border-color:var(--warn);background:var(--warn-soft)}
   <nav class="tabs" role="tablist" aria-label="Secciones">
     <button class="tab" role="tab" type="button" id="t-stock" aria-controls="p-stock" aria-selected="true">Stock de parvas</button>
     <button class="tab" role="tab" type="button" id="t-cargar" aria-controls="p-cargar" aria-selected="false">Cargar</button>
-    <button class="tab" role="tab" type="button" id="t-viajes" aria-controls="p-viajes" aria-selected="false">Viajes</button>
+    <button class="tab" role="tab" type="button" id="t-viajes" aria-controls="p-viajes" aria-selected="false">Granel común</button>
     <button class="tab" role="tab" type="button" id="t-lav" aria-controls="p-lav" aria-selected="false">Sal lavada</button>
     <button class="tab" role="tab" type="button" id="t-desc" aria-controls="p-desc" aria-selected="false">Descarte y salmuera</button>
   </nav>
@@ -316,7 +316,7 @@ input.f[aria-invalid=true]{border-color:var(--warn);background:var(--warn-soft)}
       <button class="btn" type="button" id="lClear">Limpiar</button>
     </div>
     <div class="tablebox"><table>
-      <thead><tr><th class="l">Fecha</th><th class="l">Movimiento</th><th class="l">Transporte · chofer</th><th class="l">Destinatario</th><th>Neto</th><th>Remito</th></tr></thead>
+      <thead><tr><th class="l">Fecha</th><th class="l">Transporte · chofer</th><th class="l">Destinatario</th><th>Neto</th><th>Remito</th><th class="l">Movimiento</th></tr></thead>
       <tbody id="lavViajes"></tbody>
     </table></div>
     <div class="row"><button class="btn" type="button" id="moreL" hidden>Ver más</button></div>
@@ -638,8 +638,8 @@ function renderLav(){
   const L=all.filter(v=>v.f.startsWith(fm)&&(!fd||v.f===fd)&&(!fk||v.k===fk)&&(!ft||v.tr===ft)&&(!fe||v.dest===fe));
   const tot=L.reduce((a,v)=>a+v.t,0), kc={}; L.forEach(v=>kc[v.k]=(kc[v.k]||0)+v.t);
   const pk=k=>k==="Sal lavada"?"p-info":k==="Descarte centrífuga"?"p-pend":"p-warn";
-  $("lavViajes").innerHTML=(L.slice(0,lLimit).map(v=>`<tr><td class="l">${dmy(v.f)}</td><td class="l"><span class="pill ${pk(v.k)}">${esc(v.k)}</span>${v.obs?` <span class="mini">${esc(v.obs)}</span>`:""}</td><td class="l">${esc(v.tr)||"—"}${v.ch?" · "+esc(v.ch):""}</td><td class="l">${esc(v.dest)||"—"}</td><td>${nf(v.t,2)} t</td><td>${v.rem?esc(v.rem)+(v.rt?` <span class="mini">${v.rt}</span>`:""):(v.rt?`<span class="mini">— ${v.rt}</span>`:"—")}</td></tr>`).join("")||`<tr><td class="l" colspan="6">No hay movimientos con esos filtros.</td></tr>`)
-    +(L.length?`<tr class="total"><td class="l">${fd?"Total del "+dmy(fd):"Total de "+MESL[+fm.slice(5)-1]+" "+fm.slice(0,4)}</td><td class="l" colspan="3" style="white-space:normal">${L.length} movimiento${L.length===1?"":"s"} · ${Object.entries(kc).map(([k,t])=>esc(k)+" "+nf(t,2)+" t").join(" · ")}</td><td>${nf(tot,2)} t</td><td></td></tr>`:"");
+  $("lavViajes").innerHTML=(L.slice(0,lLimit).map(v=>`<tr><td class="l">${dmy(v.f)}</td><td class="l">${esc(v.tr)||"—"}${v.ch?" · "+esc(v.ch):""}</td><td class="l">${esc(v.dest)||"—"}</td><td>${nf(v.t,2)} t</td><td>${v.rem?esc(v.rem)+(v.rt?` <span class="mini">${v.rt}</span>`:""):(v.rt?`<span class="mini">— ${v.rt}</span>`:"—")}</td><td class="l"><span class="pill ${pk(v.k)}">${esc(v.k)}</span>${v.obs?` <span class="mini">${esc(v.obs)}</span>`:""}</td></tr>`).join("")||`<tr><td class="l" colspan="6">No hay movimientos con esos filtros.</td></tr>`)
+    +(L.length?`<tr class="total"><td class="l">${fd?"Total del "+dmy(fd):"Total de "+MESL[+fm.slice(5)-1]+" "+fm.slice(0,4)}</td><td class="l" colspan="2" style="white-space:normal">${L.length} movimiento${L.length===1?"":"s"} · ${Object.entries(kc).map(([k,t])=>esc(k)+" "+nf(t,2)+" t").join(" · ")}</td><td>${nf(tot,2)} t</td><td colspan="2"></td></tr>`:"");
   $("moreL").hidden=L.length<=lLimit; $("moreL").textContent=`Ver más (${L.length-lLimit} restantes)`;
 }
 ["lMes","lDia","lTipo","lTr","lDest"].forEach(id=>$(id).onchange=()=>{ if(id==="lMes") $("lDia").value=""; lLimit=60;renderLav();});
