@@ -30,7 +30,6 @@ data = json.dumps(D, ensure_ascii=False).replace('</', '<\\/')
 js = js[:m.start()] + '\nconst SEMILLA=' + data + ';\nconst NOTAS_PUB=' + json.dumps(NOTAS, ensure_ascii=False).replace('</', '<\\/') + ';\n' + js[m.end():]
 assert js.count('const PUBLICA=false;') == 1
 js = js.replace('const PUBLICA=false;', 'const PUBLICA=true;')
-js = js.replace('https://drive.google.com/file/d/', '#')  # consultas: internas, no se muestran sin base
 js = re.sub(r'(?<=[;{}]) *//[^\n]*', '', js)
 js = re.sub(r'\n *//[^\n]*', '', js)
 html = re.sub(r'<!--.*?-->', '', html, flags=re.S)
