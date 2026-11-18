@@ -1,7 +1,7 @@
 """Genera lavado/index.html: vista de solo lectura de PROD · Registros de lavado para Dirección.
 Uso: python3 lavado/build/build.py <export>/dias   (la colección "notas" exportada en <export>/notas)
 Desde 18/11 (pedido de Rodrigo): todo igual que la herramienta, con nombres, patentes, Trazabilidad, Cómo se cruza
-y el Análisis del día. Se quitan solo la pestaña Bitácora, las consultas de la carga y los links a Drive (no se pueden abrir)."""
+y el Análisis del día. Se quitan solo la pestaña Bitácora, las consultas de la carga (links a Drive sí: Rodrigo comparte las carpetas con Dirección)."""
 import json, glob, os, re, sys, unicodedata
 HERE = os.path.dirname(os.path.abspath(__file__))
 rd = lambda n: open(os.path.join(HERE, n), encoding='utf8').read()
@@ -15,10 +15,7 @@ if len(sys.argv) > 1:
     D = sorted([d for d in D if d.get('fecha')], key=lambda d: d['fecha'])
 else:
     D = json.loads(m.group(1))
-for d in D:
-    if d.get('fuente'): d['fuente'] = {'nombre': d['fuente'].get('nombre', '')}
-    dp = d.get('desp') or {}
-    if dp.get('pdf'): dp['pdf'] = {'nombre': dp['pdf'].get('nombre', '')}
+# 18/11: los links a los PDF de Drive se dejan (Rodrigo comparte las carpetas con Dirección)
 # notas de la bitácora (colección "notas", exportada junto a "dias"): se muestran en Día e Indicadores
 NOMBRES_USR = {'u_4XNCAzY54AolHW456wUSfQ': 'Rodrigo'}
 NOTAS = []
@@ -49,7 +46,7 @@ head = ('<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="
         '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&display=swap">'
         '<style>body{margin:0}[hidden]{display:none!important}</style></head><body>\n')
 out = head + rd('piel-slb.html') + html + js + '\n</body></html>\n'
-NOMBRES = ['drive.google.com/file/d/1']
+NOMBRES = []
 bad = [n for n in NOMBRES if n in out]
 if bad: [print(n, out[max(0,out.find(n)-120):out.find(n)+60].replace('\n',' ')) for n in bad]
 assert not bad, bad
